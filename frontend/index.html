@@ -3,17 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Madurai:wght@300;400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="scss/style.css">
     <title>Vite et gourmand</title>
 </head>
 <body>
+    <header>
+<nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark" >
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/">Vite et gourmand</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link " href="/">Accueil</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/ourmenus">Nos menus</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/rentals">Locations</a>
+        </li>
+                <li class="nav-item">
+          <a class="nav-link" href="/allrésa">Les réservations</a>
+        </li>
+                <li class="nav-item">
+          <a class="nav-link" href="/account">Mon compte</a>
+        </li>
+            <li class="nav-item" >
+          <a class="nav-link" href="/signup">Inscription</a>
+        </li>
+                <li class="nav-item" >
+          <a class="nav-link" href="/signin">Connexion</a>
+        </li>
+        <li class="nav-item" >
+          <button class="nav-link" id="signout-btn">Déconnexion</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
     
-    <h1 class="text-bg-primary p-3">Le menu</h1>
-    <main id="main-page">
+</header>
+    
+       <main id="main-page">
 
     </main>
-    <footer></footer>
-    <script type="module" src="/js/router.js"></script>
-    
+
+  <footer class="bg-dark text-white text-center footer">
+    <div class="row p-3 row-gap-3">
+      <div class="col-12">
+        <h3 class="text-primary">Nos horaires</h3>
+      </div>
+      <div class="col-12 col-lg-12">
+        <span>Du lundi au dimanche</span>
+        <span>12:00-14:00</span>
+        <span>18:00-23:00</span>
+
+      </div>
+      <div class="col-7 col-lg-6">
+        <p>contact@rapideetgourmand.com</p>
+        <p>Rapide et gourmand 5 rue de la rue </p>
+        <p>311500 Bordeaux 04 01 01 01 01</p>
+      </div>
+      <div class="col-5 col-lg-6">
+        <p>Conditions générale de vente</p>
+        <p >Mentions Légale</p>
+      </div>
+    </div>
+  </footer>
+  <script type="module" src="/js/router.js"></script>
 </body>
 </html>
