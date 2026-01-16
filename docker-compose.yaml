@@ -16,7 +16,7 @@ services:
       - db
 
   nginx:
-    image: nginx:alpine
+    image: nginx:1.28
     ports:
       - "8080:80"
     volumes:
@@ -28,17 +28,17 @@ services:
 
   # Ce service ne sert qu'à compiler le Sass
   sass:
-    image: node:20-alpine
+    image: node:25
     working_dir: /var/www/frontend
     volumes:
       - ./frontend:/var/www/frontend
     # Commande pour installer Sass et compiler en boucle (watch)
     command: >
       sh -c "npm install -g sass && 
-            sass --watch scss/style.scss:css/style.css"
+            sass --watch scss/style.scss:css/style.css --poll"
 
   phpmyadmin:
-    image: phpmyadmin:latest
+    image: phpmyadmin:5.2 
     container_name: phpmyadmin_container
     ports:
       - "8081:80" # On utilise le port 8081 (car 8080 est déjà pris par ton site)
