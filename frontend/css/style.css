@@ -1,23 +1,5 @@
 @charset "UTF-8";
-@import url("/node_modules/bootstrap-icons/font/bootstrap-icons.css");
-.navbar-toggler {
-  border: none !important;
-  outline: none !important;
-  background-color: transparent !important;
-  box-shadow: none !important;
-}
-
-.navbar-toggler:focus {
-  border: none !important;
-  outline: none !important;
-  box-shadow: none !important;
-}
-
-.navbar-toggler:focus-visible {
-  outline: none !important;
-  box-shadow: none !important;
-}
-
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css");
 /*!
  * Bootstrap  v5.3.8 (https://getbootstrap.com/)
  * Copyright 2011-2025 The Bootstrap Authors
@@ -11877,6 +11859,143 @@ textarea.form-control-lg {
   .d-print-none {
     display: none !important;
   }
+}
+html {
+  position: relative;
+  min-height: 100%;
+  width: 100%;
+}
+
+.navbar-toggler {
+  border: none !important;
+  outline: none !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.navbar-toggler:focus {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.navbar-toggler:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+h1, .h1 {
+  font-family: "Montserrat", sans-serif;
+  font-size: 24px;
+}
+
+h2, .h2, a {
+  font: "Montserrat", sans-serif !important;
+  font-size: 16px !important;
+}
+
+p, span {
+  font-family: "Hind Madurai", serif;
+  font-size: 12px;
+}
+
+.hero-scene {
+  position: relative;
+  margin-bottom: 20px;
+}
+.hero-scene::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url(../images/pizza-photo.jpg);
+  background-size: cover;
+  filter: brightness(0.3);
+}
+.hero-scene * {
+  position: relative;
+}
+.hero-scene .hero-scene-content {
+  height: 300px;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.text-justify {
+  text-align: justify;
+}
+
+.image-card {
+  position: relative;
+}
+.image-card:hover .titre-image,
+.image-card:hover .action-image-buttons {
+  opacity: 1;
+}
+.image-card:hover img {
+  filter: brightness(0.3);
+}
+.image-card img {
+  transition: all 0.3s;
+}
+.image-card .titre-image {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: all 0.3s;
+}
+.image-card .action-image-buttons {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 5px;
+  display: flex;
+  justify-content: space-between;
+  opacity: 0;
+  transition: all 0.3s;
+}
+
+.dot {
+  border: 1px solid #906427;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  margin: 1rem;
+}
+
+.dot:active {
+  transition: 3ms;
+  background-color: #906427;
+  border: none;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  margin: 1rem;
+}
+
+.card {
+  width: 18rem;
+  height: 300px;
+}
+
+.img-user {
+  width: 25px;
+  height: 25px;
+  border: black solid 0.1px;
+  border-radius: 50%;
+  background-color: #ffffff;
+}
+
+i {
+  font-size: 1rem;
 }
 
 /*# sourceMappingURL=style.css.map */
