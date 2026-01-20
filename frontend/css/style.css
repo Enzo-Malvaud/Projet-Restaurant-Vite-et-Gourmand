@@ -11982,10 +11982,16 @@ p, span {
 }
 
 .card {
-  width: 18rem;
-  height: 300px;
+  width: 15rem;
+  height: 250px;
 }
 
+@media (min-width: 768px) {
+  .card {
+    width: 15rem;
+    height: 300px;
+  }
+}
 .img-user {
   width: 25px;
   height: 25px;
@@ -11996,6 +12002,12 @@ p, span {
 
 i {
   font-size: 1rem;
+}
+
+@media (max-width: 991.98px) {
+  i {
+    font-size: 1.5rem;
+  }
 }
 
 /*# sourceMappingURL=style.css.map */
