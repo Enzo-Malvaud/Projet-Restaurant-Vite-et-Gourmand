@@ -6,39 +6,50 @@ const inputMail = document.getElementById("EmailInput");
 const inputNuméro = document.getElementById("NuméroInput");
 const inputPassword = document.getElementById("PasswordInput");
 const inputValidationPassword = document.getElementById("ValidatePasswordInput");
+const btnValidation = document.getElementById("btn-validation-inscription");
 const formSignup = document.getElementById("signupForm");
 
-//Ajout évennement submit au form d'Inscription
-formSignup.addEventListener("submit", validateForm );
+inputNom.addEventListener("keyup", validateForm);
+inputPreNom.addEventListener("keyup", validateForm);
+inputMail.addEventListener("keyup", validateForm);
+inputPassword.addEventListener("keyup", validateForm);
+inputValidationPassword.addEventListener("keyup", validateForm);
+
+btnValidation.addEventListener("click", InscrireUtilisateur );
 
 
-//Function permettant de valider tout le formulaire
-function validateForm(eventsignup){
-    eventsignup.preventDefault()
-    validateRequired(inputNom);
-    validateRequired(inputPreNom);
-    validateMail(inputMail);
-    validateNuméro(inputNuméro);
-    validateConfirmationPassword(inputPassword, inputValidationPassword);
-    validatePassword(inputPassword);
+function validateForm(){
+    const nomOk = validateRequired(inputNom);
+    const prenomOk = validateRequired(inputPreNom);
+    const mailOk = validateMail(inputMail);
+    const numéroOk= validateNuméro(inputNuméro);
+    const passwordOk = validatePassword(inputPassword);
+    const passwordConfirmOk = validateConfirmationPassword(inputPassword, inputValidationPassword);
+
+
+    if(nomOk && prenomOk && mailOk && numéroOk && passwordOk && passwordConfirmOk){
+        btnValidation.disabled = false ;
+    }
+    else{
+        btnValidation.disabled = true;
+    }
 }
 
 
-//Function permettant visuelement de prévenir si un champ et nul ou non
+
 function validateRequired(input){
     if(input.value != ''){
         input.classList.add("is-valid");
         input.classList.remove("is-invalid"); 
+        return true;
     }
     else{
         input.classList.remove("is-valid");
         input.classList.add("is-invalid");
+        return false;
     }
 }
-
-// Function  permettant de verifier le champ mail via un regex
 function validateMail(input){
-    //Définir mon regex
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const mailUser = input.value;
     if(mailUser.match(emailRegex)){
@@ -71,9 +82,8 @@ function validateNuméro(input) {
 }
 
 
-// Function  permettant de verifier le champ mdp via un regex
 function validatePassword(input){
-    //Définir mon regex
+
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{8,}$/;
     const passwordUser = input.value;
     if(passwordUser.match(passwordRegex)){
@@ -99,4 +109,42 @@ function validateConfirmationPassword(inputPwd, inputConfirmPwd){
         inputConfirmPwd.classList.remove("is-valid");
         return false;
     }
+}
+
+function InscrireUtilisateur(){
+    let dataForm = new FormData(formSignup);
+
+    let myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+
+    let raw = JSON.stringify({
+    "firstName": dataForm.get("nom"),
+    "lastName": dataForm.get("prenom"),
+    "email": dataForm.get("email"),
+    "numéro": dataForm.get("num"),
+    "password": dataForm.get("mdp")
+    });
+
+    let requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+        redirect: "follow"
+    };
+
+    fetch(apiUrl+"registration", requestOptions)
+    .then((response) => {
+        if(response.ok){
+            return response.json();
+        }
+        else{
+            alert("Erreur lors de l'inscription");
+        }
+
+    })
+    .then((result) => {
+        alert("Bravo, "+dataForm.get("prenom")+" vous êtes maintenant inscrit, vous pouvez vous connecter.")
+        document.location.href="/signin"
+    })
+    .catch((error) => console.error(error));
 }
