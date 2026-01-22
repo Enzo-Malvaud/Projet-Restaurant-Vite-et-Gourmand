@@ -5,26 +5,39 @@ const signoutBtn = document.getElementById("signout-btn");
 const apiUrl = "http://127.0.0.1:8000/api/";
 signoutBtn.addEventListener("click", signout);
 
+//retourne le cookie role
 function getRole() {
     return getCookie(RoleCookieName);
 }
 
+//function effacé cookie
 function signout(){
+    //écrase nom du token
     eraseCookie(tokenCookieName);
+    //écrase role 
     eraseCookie(RoleCookieName);
+    // redirige page
     window.location.reload();
 }
 
+
+ 
+
+//function placer token en cookie
 function setToken(token){
+    //valeur 1 nom du cookie
+    //valeur 2 on précise valeur token
+    //valeur 3 durée temps cookie 7j
     setCookie(tokenCookieName, token, 7);
 }
 
+//function return token en cookie
 function getToken(){
     return getCookie(tokenCookieName);
 }
 
 
-
+//function placer cookie
 function setCookie(name,value,days) {
     var expires = "";
     if (days) {
@@ -34,7 +47,7 @@ function setCookie(name,value,days) {
     }
     document.cookie = name + "=" + (value || "")  + expires + "; path=/";
 }
-
+//function récuperer cookie
 function getCookie(name) {
     var nameEQ = name + "=";
     var ca = document.cookie.split(';');
@@ -45,11 +58,12 @@ function getCookie(name) {
     }
     return null;
 }
-
+//function ecraser cookie
 function eraseCookie(name) {   
     document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 }
 
+//function permettant de savoir si je suis connecté ou non
 function isConnected(){
     if(getToken() == null || getToken == undefined){
         return false;
@@ -75,6 +89,7 @@ function showAndHideElementsForRoles(){
     let allElementsToEdit = document.querySelectorAll('[data-show]');
 
     allElementsToEdit.forEach(element =>{
+        //dataset object de node me permet de récupérer tous les datashows
         switch(element.dataset.show){
             case 'disconnected':
                 if(userConnected){
