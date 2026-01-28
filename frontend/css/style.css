@@ -11890,15 +11890,25 @@ h1, .h1 {
 }
 
 h2, .h2, a {
-  font: "Montserrat", sans-serif !important;
-  font-size: 16px !important;
+  font-family: "Montserrat", sans-serif;
+  font-size: 16px;
 }
 
+@media (max-width: 575.98px) {
+  h2, .h2, a {
+    font-size: 12px;
+  }
+}
 p, span {
   font-family: "Hind Madurai", serif;
   font-size: 12px;
 }
 
+@media (max-width: 575.98px) {
+  p, span {
+    font-size: 10px;
+  }
+}
 .hero-scene {
   position: relative;
   margin-bottom: 20px;
@@ -11963,38 +11973,13 @@ p, span {
   transition: all 0.3s;
 }
 
-.dot {
-  border: 1px solid #906427;
-  width: 0.7rem;
-  height: 0.7rem;
-  border-radius: 50%;
-  margin: 1rem;
-}
-
-.dot:active {
-  transition: 3ms;
-  background-color: #906427;
-  border: none;
-  width: 0.7rem;
-  height: 0.7rem;
-  border-radius: 50%;
-  margin: 1rem;
-}
-
 .card {
-  width: 15rem;
-  height: 250px;
+  padding: 0%;
 }
 
-@media (min-width: 768px) {
-  .card {
-    width: 15rem;
-    height: 300px;
-  }
-}
 .img-user {
-  width: 25px;
-  height: 25px;
+  width: 1rem;
+  height: 1rem;
   border: black solid 0.1px;
   border-radius: 50%;
   background-color: #ffffff;
