@@ -2,39 +2,39 @@
 
 namespace App\Repository;
 
-use App\Entity\Restaurant;
+use App\Entity\ThemeMenu;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Restaurant>
+ * @extends ServiceEntityRepository<ThemeMenu>
  */
-class RestaurantRepository extends ServiceEntityRepository
+class ThemeMenuRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Restaurant::class);
+        parent::__construct($registry, ThemeMenu::class);
     }
 
     //    /**
-    //     * @return Restaurant[] Returns an array of Restaurant objects
+    //     * @return ThemeMenu[] Returns an array of ThemeMenu objects
     //     */
     //    public function findByExampleField($value): array
     //    {
-    //        return $this->createQueryBuilder('r')
-    //            ->andWhere('r.exampleField = :val')
+    //        return $this->createQueryBuilder('t')
+    //            ->andWhere('t.exampleField = :val')
     //            ->setParameter('val', $value)
-    //            ->orderBy('r.id', 'ASC')
+    //            ->orderBy('t.id', 'ASC')
     //            ->setMaxResults(10)
     //            ->getQuery()
     //            ->getResult()
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?Restaurant
+    //    public function findOneBySomeField($value): ?ThemeMenu
     //    {
-    //        return $this->createQueryBuilder('r')
-    //            ->andWhere('r.exampleField = :val')
+    //        return $this->createQueryBuilder('t')
+    //            ->andWhere('t.exampleField = :val')
     //            ->setParameter('val', $value)
     //            ->getQuery()
     //            ->getOneOrNullResult()

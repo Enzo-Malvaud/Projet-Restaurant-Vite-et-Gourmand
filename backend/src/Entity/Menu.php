@@ -3,8 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\MenuRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -16,60 +14,84 @@ class Menu
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 36)]
-    private ?string $uuid = null;
+    #[ORM\Column(length: 255)]
+    private ?string $title_menu = null;
 
-    #[ORM\Column(length: 64)]
-    private ?string $title = null;
+    #[ORM\Column]
+    private ?int $minimum_number_of_persons = null;
+
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    private ?string $price_menu = null;
+
 
     #[ORM\Column(type: Types::TEXT)]
+    private ?string $list_menu = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
-    #[ORM\Column(type: Types::SMALLINT)]
-    private ?int $price = null;
+    #[ORM\Column]
+    private ?int $remaining_quantity = null;
 
-    #[ORM\Column(type: Types::DATE_IMMUTABLE)]
-    private ?\DateTimeImmutable $createdAt = null;
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $precaution_menu = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?\DateTime $updatedAt = null;
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $storage_precautions = null;
 
-    /**
-     * @var Collection<int, Category>
-     */
-    #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'MenuId')]
-    private Collection $CategoryId;
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 0)]
+    private ?string $price_per_person = null;
 
-    public function __construct()
-    {
-        $this->CategoryId = new ArrayCollection();
-    }
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getUuid(): ?string
+    public function getTitleMenu(): ?string
     {
-        return $this->uuid;
+        return $this->title_menu;
     }
 
-    public function setUuid(string $uuid): static
+    public function setTitleMenu(string $title_menu): static
     {
-        $this->uuid = $uuid;
+        $this->title_menu = $title_menu;
 
         return $this;
     }
 
-    public function getTitle(): ?string
+    public function getMinimumNumberOfPersons(): ?int
     {
-        return $this->title;
+        return $this->minimum_number_of_persons;
     }
 
-    public function setTitle(string $title): static
+    public function setMinimumNumberOfPersons(int $minimum_number_of_persons): static
     {
-        $this->title = $title;
+        $this->minimum_number_of_persons = $minimum_number_of_persons;
+
+        return $this;
+    }
+
+    public function getPriceMenu(): ?string
+    {
+        return $this->price_menu;
+    }
+
+    public function setPriceMenu(string $price_menu): static
+    {
+        $this->price_menu = $price_menu;
+
+        return $this;
+    }
+
+    public function getListMenu(): ?string
+    {
+        return $this->list_menu;
+    }
+
+    public function setListMenu(string $list_menu): static
+    {
+        $this->list_menu = $list_menu;
 
         return $this;
     }
@@ -79,69 +101,57 @@ class Menu
         return $this->description;
     }
 
-    public function setDescription(string $description): static
+    public function setDescription(?string $description): static
     {
         $this->description = $description;
 
         return $this;
     }
 
-    public function getPrice(): ?int
+    public function getRemainingQuantity(): ?int
     {
-        return $this->price;
+        return $this->remaining_quantity;
     }
 
-    public function setPrice(int $price): static
+    public function setRemainingQuantity(int $remaining_quantity): static
     {
-        $this->price = $price;
+        $this->remaining_quantity = $remaining_quantity;
 
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getPrecautionMenu(): ?string
     {
-        return $this->createdAt;
+        return $this->precaution_menu;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    public function setPrecautionMenu(?string $precaution_menu): static
     {
-        $this->createdAt = $createdAt;
+        $this->precaution_menu = $precaution_menu;
 
         return $this;
     }
 
-    public function getUpdatedAt(): ?\DateTimeImmutable
+    public function getStoragePrecautions(): ?string
     {
-        return $this->updatedAt;
+        return $this->storage_precautions;
     }
 
-    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
+    public function setStoragePrecautions(?string $storage_precautions): static
     {
-        $this->updatedAt = $updatedAt;
+        $this->storage_precautions = $storage_precautions;
 
         return $this;
     }
 
-    /**
-     * @return Collection<int, Category>
-     */
-    public function getCategoryId(): Collection
+    public function getPricePerPerson(): ?string
     {
-        return $this->CategoryId;
+        return $this->price_per_person;
     }
 
-    public function addCategoryId(Category $categoryId): static
+    public function setPricePerPerson(string $price_per_person): static
     {
-        if (!$this->CategoryId->contains($categoryId)) {
-            $this->CategoryId->add($categoryId);
-        }
-
-        return $this;
-    }
-
-    public function removeCategoryId(Category $categoryId): static
-    {
-        $this->CategoryId->removeElement($categoryId);
+        $this->price_per_person = $price_per_person;
 
         return $this;
     }
