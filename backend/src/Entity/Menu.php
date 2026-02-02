@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\MenuRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -41,6 +43,27 @@ class Menu
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 0)]
     private ?string $price_per_person = null;
+
+    /**
+     * @var Collection<int, Dish>
+     */
+    #[ORM\ManyToMany(targetEntity: Dish::class)]
+    private Collection $id_dish;
+
+    #[ORM\ManyToOne]
+    private ?Regime $regime = null;
+
+    /**
+     * @var Collection<int, ThemeMenu>
+     */
+    #[ORM\ManyToMany(targetEntity: ThemeMenu::class)]
+    private Collection $id_theme;
+
+    public function __construct()
+    {
+        $this->id_dish = new ArrayCollection();
+        $this->id_theme = new ArrayCollection();
+    }
 
 
     public function getId(): ?int
@@ -152,6 +175,66 @@ class Menu
     public function setPricePerPerson(string $price_per_person): static
     {
         $this->price_per_person = $price_per_person;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Dish>
+     */
+    public function getIdDish(): Collection
+    {
+        return $this->id_dish;
+    }
+
+    public function addIdDish(Dish $idDish): static
+    {
+        if (!$this->id_dish->contains($idDish)) {
+            $this->id_dish->add($idDish);
+        }
+
+        return $this;
+    }
+
+    public function removeIdDish(Dish $idDish): static
+    {
+        $this->id_dish->removeElement($idDish);
+
+        return $this;
+    }
+
+    public function getRegime(): ?Regime
+    {
+        return $this->regime;
+    }
+
+    public function setRegime(?Regime $regime): static
+    {
+        $this->regime = $regime;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ThemeMenu>
+     */
+    public function getIdTheme(): Collection
+    {
+        return $this->id_theme;
+    }
+
+    public function addIdTheme(ThemeMenu $idTheme): static
+    {
+        if (!$this->id_theme->contains($idTheme)) {
+            $this->id_theme->add($idTheme);
+        }
+
+        return $this;
+    }
+
+    public function removeIdTheme(ThemeMenu $idTheme): static
+    {
+        $this->id_theme->removeElement($idTheme);
 
         return $this;
     }

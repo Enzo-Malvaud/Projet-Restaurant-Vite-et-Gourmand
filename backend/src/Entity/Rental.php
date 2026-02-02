@@ -29,6 +29,14 @@ class Rental
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $date_of_modification = null;
 
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Adresse $adresse = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Material $material = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -90,6 +98,30 @@ class Rental
     public function setDateOfModification(?\DateTimeImmutable $date_of_modification): static
     {
         $this->date_of_modification = $date_of_modification;
+
+        return $this;
+    }
+
+    public function getAdresse(): ?Adresse
+    {
+        return $this->adresse;
+    }
+
+    public function setAdresse(?Adresse $adresse): static
+    {
+        $this->adresse = $adresse;
+
+        return $this;
+    }
+
+    public function getMaterial(): ?Material
+    {
+        return $this->material;
+    }
+
+    public function setMaterial(?Material $material): static
+    {
+        $this->material = $material;
 
         return $this;
     }

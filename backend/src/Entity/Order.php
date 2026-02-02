@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\OrderRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -38,6 +40,21 @@ class Order
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $date_modified = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Adresse $adresse = null;
+
+    /**
+     * @var Collection<int, Menu>
+     */
+    #[ORM\ManyToMany(targetEntity: Menu::class)]
+    private Collection $id_menu;
+
+    public function __construct()
+    {
+        $this->id_menu = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -136,6 +153,42 @@ class Order
     public function setDateModified(?\DateTimeImmutable $date_modified): static
     {
         $this->date_modified = $date_modified;
+
+        return $this;
+    }
+
+    public function getAdresse(): ?Adresse
+    {
+        return $this->adresse;
+    }
+
+    public function setAdresse(?Adresse $adresse): static
+    {
+        $this->adresse = $adresse;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Menu>
+     */
+    public function getIdMenu(): Collection
+    {
+        return $this->id_menu;
+    }
+
+    public function addIdMenu(Menu $idMenu): static
+    {
+        if (!$this->id_menu->contains($idMenu)) {
+            $this->id_menu->add($idMenu);
+        }
+
+        return $this;
+    }
+
+    public function removeIdMenu(Menu $idMenu): static
+    {
+        $this->id_menu->removeElement($idMenu);
 
         return $this;
     }
