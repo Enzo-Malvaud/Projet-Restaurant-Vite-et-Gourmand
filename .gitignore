@@ -19,3 +19,5 @@
 ###< symfony/asset-mapper ###
 
 /frontend/node_modules/
+.github/workflows/main.yaml
+backend/src/Controller/DefaultController.php
