@@ -1,11 +1,13 @@
-# yaml-language-server: $schema=../vendor/symfony/routing/Loader/schema/routing.schema.json
 
-# This file is the entry point to configure the routes of your app.
-# Methods with the #[Route] attribute are automatically imported.
-# See also https://symfony.com/doc/current/routing.html
 
-# To list all registered routes, run the following command:
-#   bin/console debug:router
+# Ce bloc dit à Symfony : "Quand on tape /api/doc, lance le contrôleur de Nelmio"
+app.swagger_ui:
+    path: /api/doc
+    methods: [GET]
+    defaults: { _controller: nelmio_api_doc.controller.swagger_ui }
 
-controllers:
-    resource: routing.controllers
+# Ce bloc permet à l'interface de lire les données JSON
+app.swagger_json:
+    path: /api/doc.json
+    methods: [GET]
+    defaults: { _controller: nelmio_api_doc.controller.swagger }

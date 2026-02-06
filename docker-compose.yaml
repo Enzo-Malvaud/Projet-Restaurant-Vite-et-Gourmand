@@ -5,6 +5,8 @@ services:
       MYSQL_USER: root
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: api_db
+    ports:
+      - "3307:3306"
     volumes:
       - db-data:/var/lib/mysql
 
@@ -25,17 +27,6 @@ services:
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - php
-
-  # Ce service ne sert qu'à compiler le Sass
-  sass:
-    image: node:25
-    working_dir: /var/www/frontend
-    volumes:
-      - ./frontend:/var/www/frontend
-    # Commande pour installer Sass et compiler en boucle (watch)
-    command: >
-      sh -c "npm install -g sass && 
-            sass --watch scss/style.scss:css/style.css --poll"
 
   phpmyadmin:
     image: phpmyadmin:5.2 
