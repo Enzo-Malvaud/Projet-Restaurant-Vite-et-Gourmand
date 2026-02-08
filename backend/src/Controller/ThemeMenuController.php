@@ -65,7 +65,7 @@ class ThemeMenuController extends AbstractController
         if ($theme_menu) {
             $theme_menu = $this->serializer->deserialize(
                 $request->getContent(),
-                HoraireRestaurant::class,
+                ThemeMenu::class,
                 'json',
                 [AbstractNormalizer::OBJECT_TO_POPULATE => $theme_menu]
             );

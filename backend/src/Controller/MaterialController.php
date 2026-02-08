@@ -65,11 +65,11 @@ class MaterialController extends AbstractController
         if ($material) {
             $material = $this->serializer->deserialize(
                 $request->getContent(),
-                HoraireRestaurant::class,
+                Material::class,
                 'json',
-                [AbstractNormalizer::OBJECT_TO_POPULATE => $materiel]
+                [AbstractNormalizer::OBJECT_TO_POPULATE => $material]
             );
-            $materiel->setUpdatedAt(new DatetimeImmutable());
+            $material->setUpdatedAt(new DatetimeImmutable());
             $this->manager->flush();
 
             return new JsonResponse(null, Response::HTTP_OK);

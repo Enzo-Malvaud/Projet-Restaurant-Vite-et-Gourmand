@@ -47,9 +47,9 @@ class MenuController extends AbstractController
     #[Route('/{id}', name: 'show', methods: 'GET')]
     public function show(int $id): JsonResponse
     {
-        $material = $this->repository->findOneBy(['id' => $id]);
-        if ($material) {
-            $responseData = $this->serializer->serialize($material, 'json');
+        $menu = $this->repository->findOneBy(['id' => $id]);
+        if ($menu) {
+            $responseData = $this->serializer->serialize($menu, 'json');
 
             return new JsonResponse($responseData, Response::HTTP_OK, [], true);
         }
@@ -61,15 +61,15 @@ class MenuController extends AbstractController
     #[Route('/{id}', name: 'edit', methods: 'PUT')]
     public function edit(int $id, Request $request): JsonResponse
     {
-        $material = $this->repository->findOneBy(['id' => $id]);
-        if ($material) {
-            $material = $this->serializer->deserialize(
+        $menu = $this->repository->findOneBy(['id' => $id]);
+        if ($menu) {
+            $menu = $this->serializer->deserialize(
                 $request->getContent(),
-                HoraireRestaurant::class,
+                Menu::class,
                 'json',
-                [AbstractNormalizer::OBJECT_TO_POPULATE => $materiel]
+                [AbstractNormalizer::OBJECT_TO_POPULATE => $menu]
             );
-            $materiel->setUpdatedAt(new DatetimeImmutable());
+            $menu->setUpdatedAt(new DatetimeImmutable());
             $this->manager->flush();
 
             return new JsonResponse(null, Response::HTTP_OK);
@@ -82,9 +82,9 @@ class MenuController extends AbstractController
     #[Route('/{id}', name: 'delete', methods: 'DELETE')]
     public function delete(int $id): JsonResponse
     {
-        $material = $this->repository->findOneBy(['id' => $id]);
-        if ($material) {
-            $this->manager->remove($material);
+        $menu = $this->repository->findOneBy(['id' => $id]);
+        if ($menu) {
+            $this->manager->remove($menu);
             $this->manager->flush();
 
             return new JsonResponse(null, Response::HTTP_NO_CONTENT);

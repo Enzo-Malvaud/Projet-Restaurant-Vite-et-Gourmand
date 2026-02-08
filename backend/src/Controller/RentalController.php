@@ -65,7 +65,7 @@ class RentalController extends AbstractController
         if ($rental) {
             $rental = $this->serializer->deserialize(
                 $request->getContent(),
-                HoraireRestaurant::class,
+                Rental::class,
                 'json',
                 [AbstractNormalizer::OBJECT_TO_POPULATE => $rental]
             );

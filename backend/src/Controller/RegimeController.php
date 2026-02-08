@@ -65,7 +65,7 @@ class RegimeController extends AbstractController
         if ($regime) {
             $regime = $this->serializer->deserialize(
                 $request->getContent(),
-                HoraireRestaurant::class,
+                Regime::class,
                 'json',
                 [AbstractNormalizer::OBJECT_TO_POPULATE => $regime]
             );

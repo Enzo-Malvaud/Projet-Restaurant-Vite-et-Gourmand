@@ -65,7 +65,7 @@ class OrderController extends AbstractController
         if ($order) {
             $order = $this->serializer->deserialize(
                 $request->getContent(),
-                HoraireRestaurant::class,
+                Order::class,
                 'json',
                 [AbstractNormalizer::OBJECT_TO_POPULATE => $order]
             );
