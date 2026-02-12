@@ -20,7 +20,7 @@ security:
             lazy: true
             stateless: true
             provider: app_user_provider
-            #point d'entrer de l'api en utilisant une connection json au lieu d'un formulaire classique en html
+            #endpoint de l'api en utilisant une connection json au lieu d'un formulaire classique en html
             json_login:
                 # api_login is a route we will create below
                 check_path: app_api_login

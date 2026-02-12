@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Dish;
-use DatetimeImmutable;
+use DateTimeImmutable;
 use App\Repository\DishRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -12,9 +12,10 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
-
+use OpenApi\Attributes as OA;
 
 #[Route('/api/dish', name: 'app_api_dish_')]
+#[OA\Tag(name: 'Dishes')]
 class DishController extends AbstractController
 {
     public function __construct(
@@ -24,7 +25,23 @@ class DishController extends AbstractController
         private UrlGeneratorInterface $urlGenerator,
     ) {}
    
-    #[Route(methods: 'POST')]
+    #[Route('', name: 'new', methods: ['POST'])]
+    #[OA\Post(
+        path: '/api/dish',
+        summary: 'Créer un nouveau plat',
+        requestBody: new OA\RequestBody(
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: 'name', type: 'string', example: 'Ratatouille'),
+                    new OA\Property(property: 'description', type: 'string', example: 'Légumes du soleil mijotés'),
+                    new OA\Property(property: 'price', type: 'number', example: 14.50)
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 201, description: 'Plat créé avec succès')
+        ]
+    )]
     public function new(Request $request): JsonResponse
     {
         $dish = $this->serializer->deserialize($request->getContent(), Dish::class, 'json');
@@ -43,32 +60,52 @@ class DishController extends AbstractController
         return new JsonResponse($responseData, Response::HTTP_CREATED, ["Location" => $location], true);
     }
 
-    #[Route('/{id}', name: 'show', methods: 'GET')]
+    #[Route('/{id}', name: 'show', methods: ['GET'])]
+    #[OA\Get(
+        path: '/api/dish/{id}',
+        summary: 'Afficher les détails d\'un plat',
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Succès'),
+            new OA\Response(response: 404, description: 'Plat non trouvé')
+        ]
+    )]
     public function show(int $id): JsonResponse
     {
         $dish = $this->repository->findOneBy(['id' => $id]);
         if ($dish) {
             $responseData = $this->serializer->serialize($dish, 'json');
-
             return new JsonResponse($responseData, Response::HTTP_OK, [], true);
         }
 
         return new JsonResponse(null, Response::HTTP_NOT_FOUND);
     }
 
-
-    #[Route('/{id}', name: 'edit', methods: 'PUT')]
+    #[Route('/{id}', name: 'edit', methods: ['PUT'])]
+    #[OA\Put(
+        path: '/api/dish/{id}',
+        summary: 'Modifier un plat existant',
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Plat mis à jour'),
+            new OA\Response(response: 404, description: 'Plat non trouvé')
+        ]
+    )]
     public function edit(int $id, Request $request): JsonResponse
     {
         $dish = $this->repository->findOneBy(['id' => $id]);
         if ($dish) {
-            $dish = $this->serializer->deserialize(
+            $this->serializer->deserialize(
                 $request->getContent(),
                 Dish::class,
                 'json',
                 [AbstractNormalizer::OBJECT_TO_POPULATE => $dish]
             );
-            $dish->setUpdatedAt(new DatetimeImmutable());
+            $dish->setUpdatedAt(new DateTimeImmutable());
             $this->manager->flush();
 
             return new JsonResponse(null, Response::HTTP_OK);
@@ -77,8 +114,18 @@ class DishController extends AbstractController
         return new JsonResponse(null, Response::HTTP_NOT_FOUND);
     }
 
-
-    #[Route('/{id}', name: 'delete', methods: 'DELETE')]
+    #[Route('/{id}', name: 'delete', methods: ['DELETE'])]
+    #[OA\Delete(
+        path: '/api/dish/{id}',
+        summary: 'Supprimer un plat',
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))
+        ],
+        responses: [
+            new OA\Response(response: 204, description: 'Plat supprimé'),
+            new OA\Response(response: 404, description: 'Plat non trouvé')
+        ]
+    )]
     public function delete(int $id): JsonResponse
     {
         $dish = $this->repository->findOneBy(['id' => $id]);
