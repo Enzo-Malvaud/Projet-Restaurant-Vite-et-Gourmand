@@ -2,3 +2,5 @@
 backend/vendor/
 backend/var/
 .git/
+.env.*.local
+.env.local
