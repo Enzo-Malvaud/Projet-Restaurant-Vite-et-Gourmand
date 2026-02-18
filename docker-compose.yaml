@@ -1,4 +1,16 @@
 services:
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      # En prod, évite MYSQL_USER: root (c'est redondant avec ROOT_PASSWORD)
+      MYSQL_ROOT_PASSWORD: root 
+      MYSQL_DATABASE: api_db
+    ports:
+      - "3307:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+
   php:
     build: 
       context: .
@@ -6,8 +18,7 @@ services:
     restart: always
     env_file: .env.prod
     volumes:
-      # On partage UNIQUEMENT le dossier public pour Nginx
-      - php-public:/var/www/backend/public:ro
+      - php-public:/var/www/backend/public
     depends_on:
       - db
 
@@ -15,13 +26,24 @@ services:
     image: nginx:1.27-alpine
     restart: always
     ports:
-      - "80:80"
+      - "8080:80"
     volumes:
       - php-public:/var/www/backend/public:ro
       - ./frontend:/var/www/frontend:ro
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
       - php
+
+  phpmyadmin:
+    image: phpmyadmin:5.2 
+    container_name: phpmyadmin_container
+    ports:
+      - "8081:80"
+    environment:
+      - PMA_HOST=db
+      - PMA_ARBITRARY=1
+    depends_on:
+      - db
 
 volumes:
   php-public:
