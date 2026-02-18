@@ -1,16 +1,24 @@
-# ... (tes installs d'extensions)
+# LA LIGNE MANQUANTE :
+FROM php:8.4-fpm 
 
 # 1. On se place dans le dossier
 WORKDIR /var/www/backend
 
-# 2. On copie le composer.json pour pouvoir installer les dépendances
+# 2. On installe les extensions nécessaires
+COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
+RUN install-php-extensions pdo_mysql intl zip opcache
+
+# 3. On installe Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+# 4. On copie les fichiers de config Composer
 COPY backend/composer.json backend/composer.lock ./
 
-# 3. On installe (crée le dossier vendor)
+# 5. On installe les dépendances (sans les fichiers de dev pour la prod)
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
-# 4. ON COPIE TOUT LE RESTE DU CODE (C'est ce qui manque chez toi !)
+# 6. On copie le reste du code
 COPY backend/ .
 
-# 5. On répare les droits
+# 7. Permissions
 RUN chown -R www-data:www-data /var/www/backend
