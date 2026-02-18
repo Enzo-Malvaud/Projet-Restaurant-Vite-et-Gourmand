@@ -1,0 +1,4 @@
+# .dockerignore
+backend/vendor/
+backend/var/
+.git/
