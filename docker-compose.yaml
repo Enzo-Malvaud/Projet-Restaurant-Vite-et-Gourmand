@@ -14,8 +14,8 @@ services:
     build: 
       context: .
       dockerfile: docker/php/Dockerfile
-    volumes:
-          - /var/www/backend/vendor
+    environment: 
+      APP_ENV: prod
     depends_on:
       - db
 

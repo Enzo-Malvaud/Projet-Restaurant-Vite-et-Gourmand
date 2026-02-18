@@ -1,11 +1,16 @@
-FROM php:8.5-fpm
+# ... (tes installs d'extensions)
 
+# 1. On se place dans le dossier
 WORKDIR /var/www/backend
-# Installateur d'extensions PHP 
-COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
-RUN install-php-extensions pdo_mysql intl zip opcache apcu
 
+# 2. On copie le composer.json pour pouvoir installer les dépendances
+COPY backend/composer.json backend/composer.lock ./
 
-# Composer
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+# 3. On installe (crée le dossier vendor)
+RUN composer install --no-dev --optimize-autoloader --no-scripts
 
+# 4. ON COPIE TOUT LE RESTE DU CODE (C'est ce qui manque chez toi !)
+COPY backend/ .
+
+# 5. On répare les droits
+RUN chown -R www-data:www-data /var/www/backend
