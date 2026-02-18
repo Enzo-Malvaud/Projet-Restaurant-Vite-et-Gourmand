@@ -4,8 +4,8 @@ services:
     restart: always
     environment:
       # En prod, évite MYSQL_USER: root (c'est redondant avec ROOT_PASSWORD)
-      MYSQL_ROOT_PASSWORD: root 
-      MYSQL_DATABASE: api_db
+      MYSQL_DATABASE: db_Vite_et_Gourmand
+      MYSQL_ROOT_PASSWORD: root
     ports:
       - "3307:3306"
     volumes:
