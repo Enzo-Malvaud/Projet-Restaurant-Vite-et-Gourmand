@@ -176,7 +176,7 @@ function validateConfirmationPassword(inputPwd, inputConfirmPwd){
     }
 }
 
-function InscrireUtilisateur(){
+/*function InscrireUtilisateur(){
     let dataForm = new FormData(formSignup);
 
     let myHeaders = new Headers();
@@ -212,4 +212,4 @@ function InscrireUtilisateur(){
         document.location.href="/signin"
     })
     .catch((error) => console.error(error));
-}
+}*/

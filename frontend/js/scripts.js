@@ -121,7 +121,7 @@ function sanitizeHtml(text){
     return tempHtml.innerHTML;
 }
 
-function getInfosUser(){
+/*function getInfosUser(){
    
     let myHeaders = new Headers();
     myHeaders.append("X-AUTH-TOKEN", getToken());
@@ -147,4 +147,4 @@ function getInfosUser(){
     })
     .catch((error)=>console.error("erreur lors de la récupérations des données utilisateurs", error));
 
-}
+}*/
