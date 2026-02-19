@@ -33,7 +33,7 @@ function getChampSignin(){
 
 
 
-function checkCredentials() {
+/*function checkCredentials() {
     let dataForm = new FormData(signinForm);
 
     let myHeaders = new Headers();
@@ -73,6 +73,6 @@ function checkCredentials() {
         window.location.replace("/");
     })
     .catch((error) => console.error(error));
-}
+} */
 
 
