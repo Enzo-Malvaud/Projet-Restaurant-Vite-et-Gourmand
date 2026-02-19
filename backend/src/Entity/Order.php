@@ -51,6 +51,9 @@ class Order
     #[ORM\ManyToMany(targetEntity: Menu::class)]
     private Collection $id_menu;
 
+    #[ORM\ManyToOne(inversedBy: 'orders')]
+    private ?User $user = null;
+
     public function __construct()
     {
         $this->id_menu = new ArrayCollection();
@@ -189,6 +192,18 @@ class Order
     public function removeIdMenu(Menu $idMenu): static
     {
         $this->id_menu->removeElement($idMenu);
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
 
         return $this;
     }

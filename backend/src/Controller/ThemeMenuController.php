@@ -108,7 +108,6 @@ class ThemeMenuController extends AbstractController
                 'json',
                 [AbstractNormalizer::OBJECT_TO_POPULATE => $theme_menu]
             );
-            $theme_menu->setUpdatedAt(new DateTimeImmutable());
             $this->manager->flush();
 
             return new JsonResponse(null, Response::HTTP_OK);
