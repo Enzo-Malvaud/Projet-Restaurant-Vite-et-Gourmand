@@ -99,6 +99,7 @@ class OrderController extends AbstractController
                 'json',
                 [AbstractNormalizer::OBJECT_TO_POPULATE => $order]
             );
+            $order->setUpdatedAt(new DateTimeImmutable());
             $this->manager->flush();
 
             return new JsonResponse(null, Response::HTTP_OK);
