@@ -57,13 +57,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var Collection<int, Order>
      */
-    #[ORM\OneToMany(targetEntity: Order::class, mappedBy: 'relation')]
+    #[ORM\OneToMany(targetEntity: Order::class, mappedBy: 'user')]
     private Collection $orders;
+
+    /**
+     * @var Collection<int, Rental>
+     */
+    #[ORM\OneToMany(targetEntity: Rental::class, mappedBy: 'user')]
+    private Collection $rental;
     // cette fonction permet de créer automatiquement un token de l'api a l'utilisateur instancié en base.
     public function __construct()
     {
         $this->apiToken = bin2hex(random_bytes(20));
         $this->orders = new ArrayCollection();
+        $this->rental = new ArrayCollection();
     }
 
     public function getId(): ?Uuid
@@ -238,6 +245,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($order->getUser() === $this) {
                 $order->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Rental>
+     */
+    public function getRental(): Collection
+    {
+        return $this->rental;
+    }
+
+    public function addRental(Rental $rental): static
+    {
+        if (!$this->rental->contains($rental)) {
+            $this->rental->add($rental);
+            $rental->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRental(Rental $rental): static
+    {
+        if ($this->rental->removeElement($rental)) {
+            // set the owning side to null (unless already changed)
+            if ($rental->getUser() === $this) {
+                $rental->setUser(null);
             }
         }
 
