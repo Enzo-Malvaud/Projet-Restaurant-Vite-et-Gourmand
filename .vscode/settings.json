@@ -1,0 +1,19 @@
+{
+    "liveSassCompile.settings.autoprefix": [
+
+    ],
+    "liveSassCompile.settings.forceBaseDirectory": "/frontend",
+    "liveSassCompile.settings.rootIsWorkspace": false,
+    "liveSassCompile.settings.watchOnLaunch": true,
+    "liveSassCompile.settings.compileOnWatch": true,
+    "liveSassCompile.settings.formats": [
+
+
+        {
+            "format": "expanded",
+            "extensionName": ".css",
+            "savePath": "/frontend/css",
+            "savePathReplacementPairs": null
+        }
+    ]
+}

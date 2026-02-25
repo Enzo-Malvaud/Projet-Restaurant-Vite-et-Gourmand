@@ -37,7 +37,7 @@
   --bs-warning: #ffc107;
   --bs-danger: #dc3545;
   --bs-light: #f8f9fa;
-  --bs-dark: #392c1e;
+  --bs-dark: #392C1E;
   --bs-primary-rgb: 144, 100, 39;
   --bs-secondary-rgb: 182, 172, 151;
   --bs-success-rgb: 25, 135, 84;
@@ -2033,7 +2033,7 @@ progress {
 
 .table-dark {
   --bs-table-color: #fff;
-  --bs-table-bg: #392c1e;
+  --bs-table-bg: #392C1E;
   --bs-table-border-color: rgb(96.6, 86.2, 75);
   --bs-table-striped-bg: rgb(66.9, 54.55, 41.25);
   --bs-table-striped-color: #fff;
@@ -3090,8 +3090,8 @@ textarea.form-control-lg {
 
 .btn-dark {
   --bs-btn-color: #fff;
-  --bs-btn-bg: #392c1e;
-  --bs-btn-border-color: #392c1e;
+  --bs-btn-bg: #392C1E;
+  --bs-btn-border-color: #392C1E;
   --bs-btn-hover-color: #fff;
   --bs-btn-hover-bg: rgb(86.7, 75.65, 63.75);
   --bs-btn-hover-border-color: rgb(76.8, 65.1, 52.5);
@@ -3101,8 +3101,8 @@ textarea.form-control-lg {
   --bs-btn-active-border-color: rgb(76.8, 65.1, 52.5);
   --bs-btn-active-shadow: inset 0 3px 5px rgba(41, 34, 34, 0.125);
   --bs-btn-disabled-color: #fff;
-  --bs-btn-disabled-bg: #392c1e;
-  --bs-btn-disabled-border-color: #392c1e;
+  --bs-btn-disabled-bg: #392C1E;
+  --bs-btn-disabled-border-color: #392C1E;
 }
 
 .btn-outline-primary {
@@ -3225,19 +3225,19 @@ textarea.form-control-lg {
 }
 
 .btn-outline-dark {
-  --bs-btn-color: #392c1e;
-  --bs-btn-border-color: #392c1e;
+  --bs-btn-color: #392C1E;
+  --bs-btn-border-color: #392C1E;
   --bs-btn-hover-color: #fff;
-  --bs-btn-hover-bg: #392c1e;
-  --bs-btn-hover-border-color: #392c1e;
+  --bs-btn-hover-bg: #392C1E;
+  --bs-btn-hover-border-color: #392C1E;
   --bs-btn-focus-shadow-rgb: 57, 44, 30;
   --bs-btn-active-color: #fff;
-  --bs-btn-active-bg: #392c1e;
-  --bs-btn-active-border-color: #392c1e;
+  --bs-btn-active-bg: #392C1E;
+  --bs-btn-active-border-color: #392C1E;
   --bs-btn-active-shadow: inset 0 3px 5px rgba(41, 34, 34, 0.125);
-  --bs-btn-disabled-color: #392c1e;
+  --bs-btn-disabled-color: #392C1E;
   --bs-btn-disabled-bg: transparent;
-  --bs-btn-disabled-border-color: #392c1e;
+  --bs-btn-disabled-border-color: #392C1E;
   --bs-gradient: none;
 }
 
@@ -11860,12 +11860,6 @@ textarea.form-control-lg {
     display: none !important;
   }
 }
-html {
-  position: relative;
-  min-height: 100%;
-  width: 100%;
-}
-
 .navbar-toggler {
   border: none !important;
   outline: none !important;
@@ -11885,33 +11879,32 @@ html {
 }
 
 h1, .h1 {
-  font-family: "Montserrat", sans-serif;
+  font-family: "Hind Madurai", serif;
   font-size: 24px;
 }
 
 h2, .h2, a {
   font-family: "Montserrat", sans-serif;
   font-size: 16px;
+  padding: 0%;
+  margin: 0%;
 }
 
 @media (max-width: 575.98px) {
-  h2, .h2, a {
+  a {
+    font-family: "Montserrat", sans-serif;
     font-size: 12px;
   }
 }
 p, span {
   font-family: "Hind Madurai", serif;
   font-size: 12px;
+  padding: 0%;
+  margin: 0%;
 }
 
-@media (max-width: 575.98px) {
-  p, span {
-    font-size: 10px;
-  }
-}
 .hero-scene {
   position: relative;
-  margin-bottom: 20px;
 }
 .hero-scene::before {
   content: "";
@@ -11922,7 +11915,7 @@ p, span {
   height: 100%;
   background-image: url(../images/pizza-photo.jpg);
   background-size: cover;
-  filter: brightness(0.3);
+  filter: brightness(0.1);
 }
 .hero-scene * {
   position: relative;
@@ -11940,41 +11933,9 @@ p, span {
   text-align: justify;
 }
 
-.image-card {
-  position: relative;
-}
-.image-card:hover .titre-image,
-.image-card:hover .action-image-buttons {
-  opacity: 1;
-}
-.image-card:hover img {
-  filter: brightness(0.3);
-}
-.image-card img {
-  transition: all 0.3s;
-}
-.image-card .titre-image {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  opacity: 0;
-  transition: all 0.3s;
-}
-.image-card .action-image-buttons {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  padding: 5px;
-  display: flex;
-  justify-content: space-between;
-  opacity: 0;
-  transition: all 0.3s;
-}
-
 .card {
-  padding: 0%;
+  margin: 0;
+  padding: 0;
 }
 
 .img-user {
@@ -11993,6 +11954,4 @@ i {
   i {
     font-size: 1.5rem;
   }
-}
-
-/*# sourceMappingURL=style.css.map */
+}/*# sourceMappingURL=style.css.map */
