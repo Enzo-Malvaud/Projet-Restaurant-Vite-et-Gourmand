@@ -1,0 +1,93 @@
+<div class="hero-scene  text-white">
+	<div class="hero-scene-content">
+		<h1 class="pb-3">Commande</h1>
+	</div>
+</div>
+
+    <main class="container p-5 ">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <h2 class="mb-4">Vos informations</h2>
+                <form>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Nom</label>
+                            <input type="text" class="form-control" placeholder="Votre nom" required>
+                        </div>
+
+                        <div class=" col-md-6">
+                            <label class="form-label">Prénom</label>
+                            <input type="text" class="form-control" placeholder="Votre prénom" required>
+                        </div>
+
+                        <div class="col-6">
+                            <label class="form-label">Menu</label>
+                            <select class="form-select">
+                                <option value="1">Menu Classique - 20.00€</option>
+                            </select>
+                        </div>
+
+                        <div class="col-6">
+                            <label class="form-label">Heure</label>
+                            <input type="time" class="form-control" required>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label class="form-label">Date</label>
+                            <input type="date" class="form-control" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Ville</label>
+                            <input type="text" class="form-control" required>
+                        </div> 
+                        
+                        <div >
+                            <label class="form-label">Adresse de livraison</label>
+                            <input type="text" class="form-control" placeholder="123 rue de la Paix" required>
+                        </div>
+
+                        <div>
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" placeholder="nom@exemple.com">
+                        </div>
+
+                        <div class="col-6">
+                            <label class="form-label">Numéro de téléphone</label>
+                            <input type="tel" class="form-control" placeholder="06 00 00 00 00">
+                        </div>
+
+                        <div class="col-6">
+                            <label class="form-label">Nombre de personnes</label>
+                            <input type="number" class="form-control" value="3" min="3" required>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+                    <button class="w-100 btn btn-primary btn-lg" type="submit">Valider la commande</button>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <h4 class="card-title">Détails tarifs</h4>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Prix Menu</span>
+                                <strong>20.00€</strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Livraison (Bordeaux)</span>
+                                <strong>5.00€</strong>
+                            </li>
+                        </ul>
+                        <div class="info-badge mt-3 small">
+                            <strong>Note :</strong> 0.59€ / km supplémentaire hors Bordeaux.
+                        </div>
+                        <div class="alert alert-success small mt-2">
+                             -10% si +5 personnes par rapport au minimum requis.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
