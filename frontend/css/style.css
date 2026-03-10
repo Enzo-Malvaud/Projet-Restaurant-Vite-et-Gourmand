@@ -11890,12 +11890,6 @@ h2, .h2, a {
   margin: 0%;
 }
 
-@media (max-width: 575.98px) {
-  a {
-    font-family: "Montserrat", sans-serif;
-    font-size: 12px;
-  }
-}
 p, span {
   font-family: "Hind Madurai", serif;
   font-size: 12px;
@@ -11953,5 +11947,15 @@ i {
 @media (max-width: 991.98px) {
   i {
     font-size: 1.5rem;
+  }
+}
+@media (min-width: 768px) {
+  .image-plat {
+    width: 50%;
+  }
+}
+@media (max-width: 767.98px) {
+  .image-plat {
+    display: none !important;
   }
 }/*# sourceMappingURL=style.css.map */

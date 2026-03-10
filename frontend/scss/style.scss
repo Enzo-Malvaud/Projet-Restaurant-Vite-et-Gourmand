@@ -38,13 +38,7 @@ h2, a{
   margin: 0%;
 
 }
-  
-@include media-breakpoint-down(sm){
- a{
-  font-family: $font-family-sans-serif;
-  font-size: 12px;
-}
-}
+
 
 
 p, span {
@@ -114,7 +108,21 @@ i {
   i {
       font-size: 1.5rem;
 
+  }
+ 
+  }
+
+
+
+@include media-breakpoint-up(md) { 
+  .image-plat{
+    width: 50%;
+  }
+ }
 
  
-}
-}
+@include media-breakpoint-down(md) { 
+  .image-plat{
+    display: none !important;
+  }
+ }
