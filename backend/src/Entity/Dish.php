@@ -3,10 +3,13 @@
 namespace App\Entity;
 
 use App\Repository\DishRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: DishRepository::class)]
+#[ORM\HasLifecycleCallbacks] 
 class Dish
 {
     #[ORM\Id]
@@ -26,12 +29,39 @@ class Dish
     #[ORM\Column(length: 255)]
     private ?string $type_of_dish = null;
 
-    
-    #[ORM\Column(type: Types::DATE_IMMUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
+
+    /**
+     * @var Collection<int, Menu>
+     */
+
+    #[ORM\ManyToMany(targetEntity: Menu::class, mappedBy: 'dishs')]
+    private Collection $menus;
+
+    public function __construct()
+    {
+        $this->menus = new ArrayCollection();
+    }
+
+
+    #[ORM\PrePersist]
+    public function setCreatedAtValue(): void
+    {
+        if ($this->createdAt === null) {
+            $this->createdAt = new \DateTimeImmutable();
+        }
+    }
+
+    #[ORM\PreUpdate]
+    public function setUpdatedAtValue(): void
+    {
+        $this->updatedAt = new \DateTimeImmutable();
+    }
+
 
     public function getId(): ?int
     {
@@ -46,7 +76,6 @@ class Dish
     public function setDishTitle(string $dish_title): static
     {
         $this->dish_title = $dish_title;
-
         return $this;
     }
 
@@ -58,7 +87,6 @@ class Dish
     public function setPicture(?string $picture): static
     {
         $this->picture = $picture;
-
         return $this;
     }
 
@@ -70,7 +98,6 @@ class Dish
     public function setAllergens(?string $allergens): static
     {
         $this->allergens = $allergens;
-
         return $this;
     }
 
@@ -82,10 +109,10 @@ class Dish
     public function setTypeOfDish(string $type_of_dish): static
     {
         $this->type_of_dish = $type_of_dish;
-
         return $this;
     }
-            public function getCreatedAt(): ?\DateTimeImmutable
+
+    public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
     }
@@ -93,7 +120,6 @@ class Dish
     public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
-
         return $this;
     }
 
@@ -105,7 +131,31 @@ class Dish
     public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
+        return $this;
+    }
 
+    /**
+     * @return Collection<int, Menu>
+     */
+    public function getMenus(): Collection
+    {
+        return $this->menus;
+    }
+
+    public function addMenu(Menu $menu): static
+    {
+        if (!$this->menus->contains($menu)) {
+            $this->menus->add($menu);
+            $menu->addDish($this); 
+        }
+        return $this;
+    }
+
+    public function removeMenu(Menu $menu): static
+    {
+        if ($this->menus->removeElement($menu)) {
+            $menu->removeDish($this);
+        }
         return $this;
     }
 }
