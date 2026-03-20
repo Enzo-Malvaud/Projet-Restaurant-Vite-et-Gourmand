@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\RegimeRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -14,8 +16,8 @@ class Regime
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $name_remige = null;
+    #[ORM\Column(length: 50)]
+    private ?string $name_regime = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
     private ?\DateTimeImmutable $createdAt = null;
@@ -23,19 +25,31 @@ class Regime
     #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
+    /**
+     * @var Collection<int, Menu>
+     */
+    #[ORM\ManyToMany(targetEntity: Menu::class, mappedBy: 'diets')]
+    private Collection $menus;
+
+    public function __construct()
+    {
+        $this->menus = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getNameRemige(): ?string
+    public function getNameRegime(): ?string
     {
-        return $this->name_remige;
+        return $this->name_regime;
     }
 
-    public function setNameRemige(string $name_remige): static
+    public function setNameRegime(string $name_regime): static
     {
-        $this->name_remige = $name_remige;
+        $this->name_regime = $name_regime;
 
         return $this;
     }
@@ -60,6 +74,33 @@ class Regime
     public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Menu>
+     */
+    public function getMenus(): Collection
+    {
+        return $this->menus;
+    }
+
+    public function addMenu(Menu $menu): static
+    {
+        if (!$this->menus->contains($menu)) {
+            $this->menus->add($menu);
+            $menu->addDiet($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMenu(Menu $menu): static
+    {
+        if ($this->menus->removeElement($menu)) {
+            $menu->removeDiet($this);
+        }
 
         return $this;
     }

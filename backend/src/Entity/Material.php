@@ -3,10 +3,13 @@
 namespace App\Entity;
 
 use App\Repository\MaterialRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: MaterialRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Material
 {
     #[ORM\Id]
@@ -14,35 +17,58 @@ class Material
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 50, unique: true)]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 0)]
+    
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)] 
     private ?string $daily_rental_price = null;
 
     #[ORM\Column]
     private ?int $total_quantity = null;
 
-    #[ORM\Column]
-    private ?int $quantity_available = null;
-
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $picture = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 0)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     private ?string $caution = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $rental_condition = null;
  
-    #[ORM\Column(type: Types::DATE_IMMUTABLE)]
+   
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
+
+    #[ORM\OneToMany(targetEntity: MaterialRental::class, mappedBy: 'material')]
+    private Collection $materialRentals;
+
+    public function __construct()
+    {
+        $this->materialRentals = new ArrayCollection();
+    }
+
+    #[ORM\PrePersist]
+    public function setCreatedAtValue(): void
+    {
+        if ($this->createdAt === null) {
+            $this->createdAt = new \DateTimeImmutable();
+        }
+    }
+
+    #[ORM\PreUpdate]
+    public function setUpdatedAtValue(): void
+    {
+        $this->updatedAt = new \DateTimeImmutable();
+    }
+
+   
 
     public function getId(): ?int
     {
@@ -57,7 +83,6 @@ class Material
     public function setName(string $name): static
     {
         $this->name = $name;
-
         return $this;
     }
 
@@ -69,7 +94,6 @@ class Material
     public function setDescription(?string $description): static
     {
         $this->description = $description;
-
         return $this;
     }
 
@@ -81,7 +105,6 @@ class Material
     public function setDailyRentalPrice(string $daily_rental_price): static
     {
         $this->daily_rental_price = $daily_rental_price;
-
         return $this;
     }
 
@@ -93,19 +116,6 @@ class Material
     public function setTotalQuantity(int $total_quantity): static
     {
         $this->total_quantity = $total_quantity;
-
-        return $this;
-    }
-
-    public function getQuantityAvailable(): ?int
-    {
-        return $this->quantity_available;
-    }
-
-    public function setQuantityAvailable(int $quantity_available): static
-    {
-        $this->quantity_available = $quantity_available;
-
         return $this;
     }
 
@@ -117,7 +127,6 @@ class Material
     public function setPicture(?string $picture): static
     {
         $this->picture = $picture;
-
         return $this;
     }
 
@@ -129,7 +138,6 @@ class Material
     public function setCaution(string $caution): static
     {
         $this->caution = $caution;
-
         return $this;
     }
 
@@ -141,11 +149,10 @@ class Material
     public function setRentalCondition(?string $rental_condition): static
     {
         $this->rental_condition = $rental_condition;
-
         return $this;
     }
 
-            public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
     }
@@ -153,7 +160,6 @@ class Material
     public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
-
         return $this;
     }
 
@@ -165,7 +171,14 @@ class Material
     public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
-
         return $this;
+    }
+
+    /**
+     * @return Collection<int, MaterialRental>
+     */
+    public function getMaterialRentals(): Collection
+    {
+        return $this->materialRentals;
     }
 }

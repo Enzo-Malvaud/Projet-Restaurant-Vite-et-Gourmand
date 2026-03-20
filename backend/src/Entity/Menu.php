@@ -9,6 +9,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: MenuRepository::class)]
+#[ORM\HasLifecycleCallbacks] 
 class Menu
 {
     #[ORM\Id]
@@ -19,18 +20,14 @@ class Menu
     #[ORM\Column(length: 255)]
     private ?string $title_menu = null;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $description = null;
+
     #[ORM\Column]
     private ?int $minimum_number_of_persons = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)] 
     private ?string $price_menu = null;
-
-
-    #[ORM\Column(type: Types::TEXT)]
-    private ?string $list_menu = null;
-
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private ?string $description = null;
 
     #[ORM\Column]
     private ?int $remaining_quantity = null;
@@ -41,37 +38,52 @@ class Menu
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $storage_precautions = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 0)]
-    private ?string $price_per_person = null;
-
-    
-    #[ORM\Column(type: Types::DATE_IMMUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
     /**
      * @var Collection<int, Dish>
      */
-    #[ORM\ManyToMany(targetEntity: Dish::class)]
-    private Collection $id_dish;
+    #[ORM\ManyToMany(targetEntity: Dish::class, inversedBy: 'menus')]
+    private Collection $dishs;
 
-    #[ORM\ManyToOne]
-    private ?Regime $regime = null;
+    /**
+     * @var Collection<int, Regime>
+     */
+    #[ORM\ManyToMany(targetEntity: Regime::class, inversedBy: 'menus')]
+    private Collection $diets;
 
     /**
      * @var Collection<int, ThemeMenu>
      */
-    #[ORM\ManyToMany(targetEntity: ThemeMenu::class)]
-    private Collection $id_theme;
+    #[ORM\ManyToMany(targetEntity: ThemeMenu::class, inversedBy: 'menus')]
+    private Collection $themes;
 
     public function __construct()
     {
-        $this->id_dish = new ArrayCollection();
-        $this->id_theme = new ArrayCollection();
+        $this->dishs = new ArrayCollection();
+        $this->diets = new ArrayCollection();
+        $this->themes = new ArrayCollection();
     }
 
+
+    #[ORM\PrePersist]
+    public function setCreatedAtValue(): void
+    {
+        if ($this->createdAt === null) {
+            $this->createdAt = new \DateTimeImmutable();
+        }
+    }
+
+    #[ORM\PreUpdate]
+    public function setUpdatedAtValue(): void
+    {
+        $this->updatedAt = new \DateTimeImmutable();
+    }
+    // --------------------------------
 
     public function getId(): ?int
     {
@@ -86,7 +98,6 @@ class Menu
     public function setTitleMenu(string $title_menu): static
     {
         $this->title_menu = $title_menu;
-
         return $this;
     }
 
@@ -98,31 +109,6 @@ class Menu
     public function setMinimumNumberOfPersons(int $minimum_number_of_persons): static
     {
         $this->minimum_number_of_persons = $minimum_number_of_persons;
-
-        return $this;
-    }
-
-    public function getPriceMenu(): ?string
-    {
-        return $this->price_menu;
-    }
-
-    public function setPriceMenu(string $price_menu): static
-    {
-        $this->price_menu = $price_menu;
-
-        return $this;
-    }
-
-    public function getListMenu(): ?string
-    {
-        return $this->list_menu;
-    }
-
-    public function setListMenu(string $list_menu): static
-    {
-        $this->list_menu = $list_menu;
-
         return $this;
     }
 
@@ -134,7 +120,6 @@ class Menu
     public function setDescription(?string $description): static
     {
         $this->description = $description;
-
         return $this;
     }
 
@@ -146,7 +131,6 @@ class Menu
     public function setRemainingQuantity(int $remaining_quantity): static
     {
         $this->remaining_quantity = $remaining_quantity;
-
         return $this;
     }
 
@@ -158,7 +142,6 @@ class Menu
     public function setPrecautionMenu(?string $precaution_menu): static
     {
         $this->precaution_menu = $precaution_menu;
-
         return $this;
     }
 
@@ -170,55 +153,17 @@ class Menu
     public function setStoragePrecautions(?string $storage_precautions): static
     {
         $this->storage_precautions = $storage_precautions;
-
         return $this;
     }
 
-    public function getPricePerPerson(): ?string
+    public function getPriceMenu(): ?string
     {
-        return $this->price_per_person;
+        return $this->price_menu;
     }
 
-    public function setPricePerPerson(string $price_per_person): static
+    public function setPriceMenu(string $price_menu): static
     {
-        $this->price_per_person = $price_per_person;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Dish>
-     */
-    public function getIdDish(): Collection
-    {
-        return $this->id_dish;
-    }
-
-    public function addIdDish(Dish $idDish): static
-    {
-        if (!$this->id_dish->contains($idDish)) {
-            $this->id_dish->add($idDish);
-        }
-
-        return $this;
-    }
-
-    public function removeIdDish(Dish $idDish): static
-    {
-        $this->id_dish->removeElement($idDish);
-
-        return $this;
-    }
-
-    public function getRegime(): ?Regime
-    {
-        return $this->regime;
-    }
-
-    public function setRegime(?Regime $regime): static
-    {
-        $this->regime = $regime;
-
+        $this->price_menu = $price_menu;
         return $this;
     }
 
@@ -227,46 +172,74 @@ class Menu
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
+    /**
+     * @return Collection<int, Dish>
+     */
+    public function getDishs(): Collection
     {
-        $this->updatedAt = $updatedAt;
+        return $this->dishs;
+    }
 
+    public function addDish(Dish $dish): static
+    {
+        if (!$this->dishs->contains($dish)) {
+            $this->dishs->add($dish);
+        }
+        return $this;
+    }
+
+    public function removeDish(Dish $dish): static
+    {
+        $this->dishs->removeElement($dish);
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Regime>
+     */
+    public function getDiets(): Collection
+    {
+        return $this->diets;
+    }
+
+    public function addDiet(Regime $diet): static
+    {
+        if (!$this->diets->contains($diet)) {
+            $this->diets->add($diet);
+        }
+        return $this;
+    }
+
+    public function removeDiet(Regime $diet): static
+    {
+        $this->diets->removeElement($diet);
         return $this;
     }
 
     /**
      * @return Collection<int, ThemeMenu>
      */
-    public function getIdTheme(): Collection
+    public function getThemes(): Collection
     {
-        return $this->id_theme;
+        return $this->themes;
     }
 
-    public function addIdTheme(ThemeMenu $idTheme): static
+    public function addTheme(ThemeMenu $theme): static
     {
-        if (!$this->id_theme->contains($idTheme)) {
-            $this->id_theme->add($idTheme);
+        if (!$this->themes->contains($theme)) {
+            $this->themes->add($theme);
         }
-
         return $this;
     }
 
-    public function removeIdTheme(ThemeMenu $idTheme): static
+    public function removeTheme(ThemeMenu $theme): static
     {
-        $this->id_theme->removeElement($idTheme);
-
+        $this->themes->removeElement($theme);
         return $this;
     }
 }

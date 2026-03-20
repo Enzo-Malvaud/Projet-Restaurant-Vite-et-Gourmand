@@ -3,10 +3,13 @@
 namespace App\Entity;
 
 use App\Repository\ThemeMenuRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ThemeMenuRepository::class)]
+#[ORM\HasLifecycleCallbacks] 
 class ThemeMenu
 {
     #[ORM\Id]
@@ -14,15 +17,42 @@ class ThemeMenu
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $name_theme = null;
+    #[ORM\Column(length: 50)]
+    private ?string $nameTheme = null;
 
-    #[ORM\Column(type: Types::DATE_IMMUTABLE)]
+    #[ORM\Column(length: 255)]
+    private ?string $description = null;
+
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
+    /**
+     * @var Collection<int, Menu>
+     */
+    #[ORM\ManyToMany(targetEntity: Menu::class, mappedBy: 'themes')]
+    private Collection $menus;
+
+    public function __construct()
+    {
+        $this->menus = new ArrayCollection();
+    }
+
+    #[ORM\PrePersist]
+    public function setCreatedAtValue(): void
+    {
+        if ($this->createdAt === null) {
+            $this->createdAt = new \DateTimeImmutable();
+        }
+    }
+
+    #[ORM\PreUpdate]
+    public function setUpdatedAtValue(): void
+    {
+        $this->updatedAt = new \DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {
@@ -31,26 +61,29 @@ class ThemeMenu
 
     public function getNameTheme(): ?string
     {
-        return $this->name_theme;
+        return $this->nameTheme;
     }
 
-    public function setNameTheme(string $name_theme): static
+    public function setNameTheme(string $nameTheme): static
     {
-        $this->name_theme = $name_theme;
+        $this->nameTheme = $nameTheme;
+        return $this;
+    }
+    
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
 
+    public function setDescription(string $description): static
+    {
+        $this->description = $description;
         return $this;
     }
 
-        public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
     }
 
     public function getUpdatedAt(): ?\DateTimeImmutable
@@ -58,10 +91,28 @@ class ThemeMenu
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
+    /**
+     * @return Collection<int, Menu>
+     */
+    public function getMenus(): Collection
     {
-        $this->updatedAt = $updatedAt;
+        return $this->menus;
+    }
 
+    public function addMenu(Menu $menu): static
+    {
+        if (!$this->menus->contains($menu)) {
+            $this->menus->add($menu);
+            $menu->addTheme($this); 
+        }
+        return $this;
+    }
+
+    public function removeMenu(Menu $menu): static
+    {
+        if ($this->menus->removeElement($menu)) {
+            $menu->removeTheme($this); 
+        }
         return $this;
     }
 }
