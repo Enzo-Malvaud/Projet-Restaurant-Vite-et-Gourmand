@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: MenuRepository::class)]
 #[ORM\HasLifecycleCallbacks] 
@@ -15,51 +16,76 @@ class Menu
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['menu:read'])]
     private ?int $id = null;
 
+  
     #[ORM\Column(length: 255)]
+    #[Groups(['menu:read', 'menu:write'])]
     private ?string $title_menu = null;
 
+
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['menu:read', 'menu:write'])]
     private ?string $description = null;
 
+  
     #[ORM\Column]
+    #[Groups(['menu:read', 'menu:write'])]
     private ?int $minimum_number_of_persons = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)] 
-    private ?string $price_menu = null;
+  
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    #[Groups(['menu:read', 'menu:write'])]
+    private ?float $price_menu = null;
 
+  
     #[ORM\Column]
+    #[Groups(['menu:read', 'menu:write'])]
     private ?int $remaining_quantity = null;
 
+  
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['menu:read', 'menu:write'])]
     private ?string $precaution_menu = null;
 
+
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['menu:read', 'menu:write'])]
     private ?string $storage_precautions = null;
 
+  
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    #[Groups(['menu:read'])]
     private ?\DateTimeImmutable $createdAt = null;
 
+
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    #[Groups(['menu:read'])]
     private ?\DateTimeImmutable $updatedAt = null;
 
     /**
      * @var Collection<int, Dish>
+
      */
     #[ORM\ManyToMany(targetEntity: Dish::class, inversedBy: 'menus')]
+    #[Groups(['menu:read'])]
     private Collection $dishs;
 
     /**
      * @var Collection<int, Regime>
+
      */
     #[ORM\ManyToMany(targetEntity: Regime::class, inversedBy: 'menus')]
+    #[Groups(['menu:read'])]
     private Collection $diets;
 
     /**
      * @var Collection<int, ThemeMenu>
+
      */
     #[ORM\ManyToMany(targetEntity: ThemeMenu::class, inversedBy: 'menus')]
+    #[Groups(['menu:read'])]
     private Collection $themes;
 
     public function __construct()
@@ -78,12 +104,12 @@ class Menu
         }
     }
 
+
     #[ORM\PreUpdate]
     public function setUpdatedAtValue(): void
     {
         $this->updatedAt = new \DateTimeImmutable();
     }
-    // --------------------------------
 
     public function getId(): ?int
     {
@@ -156,12 +182,13 @@ class Menu
         return $this;
     }
 
-    public function getPriceMenu(): ?string
+    public function getPriceMenu(): ?float
     {
         return $this->price_menu;
     }
 
-    public function setPriceMenu(string $price_menu): static
+
+    public function setPriceMenu(float $price_menu): static
     {
         $this->price_menu = $price_menu;
         return $this;
@@ -172,9 +199,23 @@ class Menu
         return $this->createdAt;
     }
 
+ 
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+        return $this;
+    }
+
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
         return $this->updatedAt;
+    }
+
+
+    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
+        return $this;
     }
 
     /**

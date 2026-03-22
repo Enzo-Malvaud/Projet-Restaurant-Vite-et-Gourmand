@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
@@ -20,30 +21,37 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator('doctrine.uuid_generator')]
+    #[Groups(['user:read'])]
     private ?Uuid $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $email = null;
 
     /**
      * @var list<string> The user roles
      */
     #[ORM\Column]
+    #[Groups(['user:read'])]
     private array $roles = [];
     
     #[ORM\Column(length: 255)]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $lastName = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $firstName = null;
  
     /**
      * @var string The hashed password
      */
+    #[Groups(['user:write'])]
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $numero = null;
 
     #[ORM\Column(length: 255)]

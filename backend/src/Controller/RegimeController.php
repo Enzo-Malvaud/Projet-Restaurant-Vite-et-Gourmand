@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\Regime;
-use DateTimeImmutable; // Corrigé (T majuscule)
 use App\Repository\RegimeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -32,7 +31,7 @@ class RegimeController extends AbstractController
         requestBody: new OA\RequestBody(
             content: new OA\JsonContent(
                 properties: [
-                    new OA\Property(property: 'name', type: 'string', example: 'Végétarien')
+                    new OA\Property(property: 'name_regime', type: 'string', example: 'Végétarien')
                 ]
             )
         ),
@@ -42,13 +41,18 @@ class RegimeController extends AbstractController
     )]
     public function new(Request $request): JsonResponse
     {
-        $regime = $this->serializer->deserialize($request->getContent(), Regime::class, 'json');
-        $regime->setCreatedAt(new DateTimeImmutable());
+
+        $regime = $this->serializer->deserialize($request->getContent(), Regime::class, 'json', [
+            AbstractNormalizer::GROUPS => ['regime:write']
+        ]);
+        
 
         $this->manager->persist($regime);
         $this->manager->flush();
 
-        $responseData = $this->serializer->serialize($regime, 'json');
+        $responseData = $this->serializer->serialize($regime, 'json', [
+            AbstractNormalizer::GROUPS => ['regime:read']
+        ]);
         $location = $this->urlGenerator->generate(
             'app_api_regime_show',
             ['id' => $regime->getId()],
@@ -62,7 +66,7 @@ class RegimeController extends AbstractController
     #[OA\Get(
         path: '/api/regime/{id}',
         summary: 'Afficher un régime spécifique',
-        parameters: [new OA\Parameter(name: 'id', in: 'path', schema: new OA\Schema(type: 'integer'))],
+        parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))],
         responses: [
             new OA\Response(response: 200, description: 'Succès'),
             new OA\Response(response: 404, description: 'Non trouvé')
@@ -72,7 +76,10 @@ class RegimeController extends AbstractController
     {
         $regime = $this->repository->findOneBy(['id' => $id]);
         if ($regime) {
-            $responseData = $this->serializer->serialize($regime, 'json');
+    
+            $responseData = $this->serializer->serialize($regime, 'json', [
+                AbstractNormalizer::GROUPS => ['regime:read']
+            ]);
             return new JsonResponse($responseData, Response::HTTP_OK, [], true);
         }
 
@@ -83,22 +90,35 @@ class RegimeController extends AbstractController
     #[OA\Put(
         path: '/api/regime/{id}',
         summary: 'Modifier un régime',
-        parameters: [new OA\Parameter(name: 'id', in: 'path', schema: new OA\Schema(type: 'integer'))],
+        parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))],
+        requestBody: new OA\RequestBody(
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: 'name_regime', type: 'string', example: 'Vegan')
+                ]
+            )
+        ),
         responses: [
-            new OA\Response(response: 200, description: 'Mis à jour')
+            new OA\Response(response: 200, description: 'Mis à jour'),
+            new OA\Response(response: 404, description: 'Non trouvé')
         ]
     )]
     public function edit(int $id, Request $request): JsonResponse
     {
         $regime = $this->repository->findOneBy(['id' => $id]);
         if ($regime) {
+   
             $this->serializer->deserialize(
                 $request->getContent(),
                 Regime::class,
                 'json',
-                [AbstractNormalizer::OBJECT_TO_POPULATE => $regime]
+                [
+                    AbstractNormalizer::OBJECT_TO_POPULATE => $regime,
+                    AbstractNormalizer::GROUPS => ['regime:write']
+                ]
             );
-            $regime->setUpdatedAt(new DateTimeImmutable());
+            
+
             $this->manager->flush();
 
             return new JsonResponse(null, Response::HTTP_OK);
@@ -111,16 +131,17 @@ class RegimeController extends AbstractController
     #[OA\Delete(
         path: '/api/regime/{id}',
         summary: 'Supprimer un régime',
-        parameters: [new OA\Parameter(name: 'id', in: 'path', schema: new OA\Schema(type: 'integer'))],
+        parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))],
         responses: [
-            new OA\Response(response: 204, description: 'Supprimé')
+            new OA\Response(response: 204, description: 'Supprimé'),
+            new OA\Response(response: 404, description: 'Non trouvé')
         ]
     )]
     public function delete(int $id): JsonResponse
     {
         $regime = $this->repository->findOneBy(['id' => $id]);
         if ($regime) {
-            $this->manager->remove($regime); // Corrigé : on utilise le manager
+            $this->manager->remove($regime);
             $this->manager->flush();
 
             return new JsonResponse(null, Response::HTTP_NO_CONTENT);

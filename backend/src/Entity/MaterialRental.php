@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\MaterialRentalRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: MaterialRentalRepository::class)]
 #[ORM\HasLifecycleCallbacks] 
@@ -13,29 +14,42 @@ class MaterialRental
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['materialRental:read'])]
     private ?int $id = null;
 
-    #[ORM\Column] 
+
+    #[ORM\Column]
+    #[Groups(['materialRental:read', 'materialRental:write'])]
     private ?int $quantity = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)] 
-    private ?string $unit_price = null;
+
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    #[Groups(['materialRental:read'])]
+    private ?float $unit_price = null;
+
 
     #[ORM\ManyToOne(inversedBy: 'materialRentals')] 
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['materialRental:write'])]
     private ?Material $material = null;
+
 
     #[ORM\ManyToOne(inversedBy: 'materialRentals')] 
     #[ORM\JoinColumn(nullable: false)]
     private ?Rental $rental = null;
 
+
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    #[Groups(['materialRental:read'])]
     private ?\DateTimeImmutable $createdAt = null;
+
 
     #[ORM\PrePersist]
     public function setCreatedAtValue(): void
     {
-        $this->createdAt = new \DateTimeImmutable();
+        if ($this->createdAt === null) {
+            $this->createdAt = new \DateTimeImmutable();
+        }
     }
 
     public function getId(): ?int
@@ -54,12 +68,14 @@ class MaterialRental
         return $this;
     }
 
-    public function getUnitPrice(): ?string
+
+    public function getUnitPrice(): ?float
     {
         return $this->unit_price;
     }
 
-    public function setUnitPrice(string $unit_price): static
+
+    public function setUnitPrice(float $unit_price): static
     {
         $this->unit_price = $unit_price;
         return $this;
@@ -90,5 +106,12 @@ class MaterialRental
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
+    }
+
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+        return $this;
     }
 }

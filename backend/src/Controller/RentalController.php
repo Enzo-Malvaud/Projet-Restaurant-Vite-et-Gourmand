@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
-use OpenApi\Attributes as OA; // Indispensable pour la doc
+use OpenApi\Attributes as OA;
 
 #[Route('/api/rental', name: 'app_api_rental_')]
 #[OA\Tag(name: 'Rentals')]
@@ -34,8 +34,10 @@ class RentalController extends AbstractController
             required: true,
             content: new OA\JsonContent(
                 properties: [
-                    new OA\Property(property: 'title', type: 'string', example: 'Appartement bord de mer'),
-                    new OA\Property(property: 'price', type: 'number', example: 450.00)
+                    new OA\Property(property: 'title', type: 'string', example: 'prêt Moulinex'),
+                    new OA\Property(property: 'rentalPrice', type: 'number', example: 50.00),
+                    new OA\Property(property: 'dateTimeOfRendering', type: 'string', format: 'date-time', example: '2025-03-21T10:00:00Z'),
+                    new OA\Property(property: 'status', type: 'string', example: 'pending')
                 ]
             )
         ),
@@ -45,13 +47,16 @@ class RentalController extends AbstractController
     )]
     public function new(Request $request): JsonResponse
     {
-        $rental = $this->serializer->deserialize($request->getContent(), Rental::class, 'json');
-        $rental->setCreatedAt(new DateTimeImmutable());
+        $rental = $this->serializer->deserialize($request->getContent(), Rental::class, 'json', [
+            AbstractNormalizer::GROUPS => ['rental:write']
+        ]);
 
         $this->manager->persist($rental);
         $this->manager->flush();
 
-        $responseData = $this->serializer->serialize($rental, 'json');
+        $responseData = $this->serializer->serialize($rental, 'json', [
+            AbstractNormalizer::GROUPS => ['rental:read']
+        ]);
         $location = $this->urlGenerator->generate(
             'app_api_rental_show',
             ['id' => $rental->getId()],
@@ -77,7 +82,9 @@ class RentalController extends AbstractController
     {
         $rental = $this->repository->findOneBy(['id' => $id]);
         if ($rental) {
-            $responseData = $this->serializer->serialize($rental, 'json');
+            $responseData = $this->serializer->serialize($rental, 'json', [
+                AbstractNormalizer::GROUPS => ['rental:read']
+            ]);
             return new JsonResponse($responseData, Response::HTTP_OK, [], true);
         }
 
@@ -91,6 +98,17 @@ class RentalController extends AbstractController
         parameters: [
             new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))
         ],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: 'title', type: 'string', example: 'prêt machine barbe à papa '),
+                    new OA\Property(property: 'rentalPrice', type: 'number', example: 50.00),
+                    new OA\Property(property: 'dateTimeOfRendering', type: 'string', format: 'date-time', example: '2025-03-21T10:00:00Z'),
+                    new OA\Property(property: 'status', type: 'string', example: 'pending')
+                ]
+            )
+        ),
         responses: [
             new OA\Response(response: 200, description: 'Location mise à jour'),
             new OA\Response(response: 404, description: 'Location non trouvée')
@@ -104,9 +122,11 @@ class RentalController extends AbstractController
                 $request->getContent(),
                 Rental::class,
                 'json',
-                [AbstractNormalizer::OBJECT_TO_POPULATE => $rental]
+                [
+                    AbstractNormalizer::OBJECT_TO_POPULATE => $rental,
+                    AbstractNormalizer::GROUPS => ['rental:write']
+                ]
             );
-            $rental->setUpdatedAt(new DateTimeImmutable());
             $this->manager->flush();
 
             return new JsonResponse(null, Response::HTTP_OK);
