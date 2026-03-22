@@ -1,32 +1,40 @@
 <?php
 
 namespace App\Entity;
-
 use App\Repository\ThemeMenuRepository;
+
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: ThemeMenuRepository::class)]
 #[ORM\HasLifecycleCallbacks] 
 class ThemeMenu
 {
+    
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['theme:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(['theme:read', 'theme:write'])]
     private ?string $nameTheme = null;
 
+    
     #[ORM\Column(length: 255)]
+    #[Groups(['theme:read', 'theme:write'])]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    #[Groups(['theme:read'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    #[Groups(['theme:read'])]
     private ?\DateTimeImmutable $updatedAt = null;
 
     /**
@@ -40,6 +48,7 @@ class ThemeMenu
         $this->menus = new ArrayCollection();
     }
 
+
     #[ORM\PrePersist]
     public function setCreatedAtValue(): void
     {
@@ -47,6 +56,7 @@ class ThemeMenu
             $this->createdAt = new \DateTimeImmutable();
         }
     }
+
 
     #[ORM\PreUpdate]
     public function setUpdatedAtValue(): void

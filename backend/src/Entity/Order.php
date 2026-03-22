@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
 #[ORM\Table(name: '`order`')] 
@@ -16,50 +17,75 @@ class Order
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['order:read'])]
     private ?int $id = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $delivery_datetime = null;
+    #[Groups(['order:read', 'order:write'])]
+    private ?string $title = null;
 
     #[ORM\Column]
+    #[Groups(['order:read', 'order:write'])]
+    private ?\DateTimeImmutable $delivery_datetime = null;
+
+
+    #[ORM\Column]
+    #[Groups(['order:read', 'order:write'])]
     private ?int $number_of_persons = null;
 
+
     #[ORM\Column(length: 50)]
+    #[Groups(['order:read', 'order:write'])]
     private ?string $status = 'pending';
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
-    private ?string $order_price = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
-    private ?string $delivery_price = null;
+    #[Groups(['order:read'])]
+    private ?float $order_price = null;
+
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
-    private ?string $total_price = null;
+    #[Groups(['order:read'])]
+    private ?float $delivery_price = null;
+
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    #[Groups(['order:read'])]
+    private ?float $total_price = null;
+
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    #[Groups(['order:read'])]
     private ?\DateTimeImmutable $createdAt = null;
 
+
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    #[Groups(['order:read'])]
     private ?\DateTimeImmutable $updatedAt = null;
+
 
     #[ORM\ManyToOne(inversedBy: 'orders')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['order:write'])]
     private ?User $user = null;
 
 
     #[ORM\ManyToOne(inversedBy: 'orders')]
+    #[Groups(['order:write'])]
     private ?Notice $notice = null;
 
     /**
      * @var Collection<int, OrderItem>
+
      */
     #[ORM\OneToMany(targetEntity: OrderItem::class, mappedBy: 'order', orphanRemoval: true)]
+    #[Groups(['order:read'])]
     private Collection $orderItems;
 
     public function __construct()
     {
         $this->orderItems = new ArrayCollection();
     }
+
 
     #[ORM\PrePersist]
     public function setCreatedAtValue(): void
@@ -69,17 +95,27 @@ class Order
         }
     }
 
+
     #[ORM\PreUpdate]
     public function setUpdatedAtValue(): void
     {
         $this->updatedAt = new \DateTimeImmutable();
     }
 
-
-
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+   public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+
+    public function setTitle(?string $title): static
+    {
+        $this->title = $title;
+        return $this;
     }
 
     public function getDeliveryDatetime(): ?\DateTimeImmutable
@@ -115,34 +151,39 @@ class Order
         return $this;
     }
 
-    public function getOrderPrice(): ?string
+
+    public function getOrderPrice(): ?float
     {
         return $this->order_price;
     }
 
-    public function setOrderPrice(string $order_price): static
+
+    public function setOrderPrice(float $order_price): static
     {
         $this->order_price = $order_price;
         return $this;
     }
 
-    public function getDeliveryPrice(): ?string
+
+    public function getDeliveryPrice(): ?float
     {
         return $this->delivery_price;
     }
 
-    public function setDeliveryPrice(string $delivery_price): static
+
+    public function setDeliveryPrice(float $delivery_price): static
     {
         $this->delivery_price = $delivery_price;
         return $this;
     }
 
-    public function getTotalPrice(): ?string
+    public function getTotalPrice(): ?float
     {
         return $this->total_price;
     }
 
-    public function setTotalPrice(string $total_price): static
+
+    public function setTotalPrice(float $total_price): static
     {
         $this->total_price = $total_price;
         return $this;
@@ -153,9 +194,22 @@ class Order
         return $this->createdAt;
     }
 
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+        return $this;
+    }
+
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
         return $this->updatedAt;
+    }
+
+
+    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
+        return $this;
     }
 
     public function getUser(): ?User

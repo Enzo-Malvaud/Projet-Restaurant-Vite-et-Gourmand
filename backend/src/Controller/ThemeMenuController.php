@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\ThemeMenu;
-use DateTimeImmutable; // Corrigé
+
 use App\Repository\ThemeMenuRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -32,7 +32,7 @@ class ThemeMenuController extends AbstractController
         requestBody: new OA\RequestBody(
             content: new OA\JsonContent(
                 properties: [
-                    new OA\Property(property: 'name', type: 'string', example: 'Thème Été'),
+                    new OA\Property(property: 'nameTheme', type: 'string', example: 'Thème Été'),
                     new OA\Property(property: 'description', type: 'string', example: 'Menu saisonnier')
                 ]
             )
@@ -43,13 +43,16 @@ class ThemeMenuController extends AbstractController
     )]
     public function new(Request $request): JsonResponse
     {
-        $theme_menu = $this->serializer->deserialize($request->getContent(), ThemeMenu::class, 'json');
-        $theme_menu->setCreatedAt(new DateTimeImmutable());
+        $theme_menu = $this->serializer->deserialize($request->getContent(), ThemeMenu::class, 'json', [
+            AbstractNormalizer::GROUPS => ['theme:write']
+        ]);
 
         $this->manager->persist($theme_menu);
         $this->manager->flush();
 
-        $responseData = $this->serializer->serialize($theme_menu, 'json');
+        $responseData = $this->serializer->serialize($theme_menu, 'json', [
+            AbstractNormalizer::GROUPS => ['theme:read']
+        ]);
         $location = $this->urlGenerator->generate(
             'app_api_theme_menu_show',
             ['id' => $theme_menu->getId()],
@@ -73,7 +76,9 @@ class ThemeMenuController extends AbstractController
     {
         $theme_menu = $this->repository->findOneBy(['id' => $id]);
         if ($theme_menu) {
-            $responseData = $this->serializer->serialize($theme_menu, 'json'); // Corrigé : renommage pour éviter conflit
+            $responseData = $this->serializer->serialize($theme_menu, 'json', [
+                AbstractNormalizer::GROUPS => ['theme:read']
+            ]);
 
             return new JsonResponse($responseData, Response::HTTP_OK, [], true);
         }
@@ -89,7 +94,7 @@ class ThemeMenuController extends AbstractController
         requestBody: new OA\RequestBody(
             content: new OA\JsonContent(
                 properties: [
-                    new OA\Property(property: 'name', type: 'string', example: 'Nouveau Nom')
+                    new OA\Property(property: 'nameTheme', type: 'string', example: 'Nouveau Nom')
                 ]
             )
         ),
@@ -106,9 +111,11 @@ class ThemeMenuController extends AbstractController
                 $request->getContent(),
                 ThemeMenu::class,
                 'json',
-                [AbstractNormalizer::OBJECT_TO_POPULATE => $theme_menu]
+                [
+                    AbstractNormalizer::OBJECT_TO_POPULATE => $theme_menu,
+                    AbstractNormalizer::GROUPS => ['theme:write']
+                ]
             );
-            $theme_menu->setUpdatedAt(new DateTimeImmutable());
             $this->manager->flush();
 
             return new JsonResponse(null, Response::HTTP_OK);
@@ -131,7 +138,7 @@ class ThemeMenuController extends AbstractController
     {
         $theme_menu = $this->repository->findOneBy(['id' => $id]);
         if ($theme_menu) {
-            $this->manager->remove($theme_menu); // Corrigé : utilisation du manager
+            $this->manager->remove($theme_menu);
             $this->manager->flush();
 
             return new JsonResponse(null, Response::HTTP_NO_CONTENT);

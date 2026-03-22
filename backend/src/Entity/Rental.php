@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: RentalRepository::class)]
 #[ORM\HasLifecycleCallbacks] 
@@ -15,25 +16,35 @@ class Rental
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['rental:read'])]
     private ?int $id = null;
-
+    
     #[ORM\Column]
-    private ?\DateTimeImmutable $datetime_of_rendering = null;
+    #[Groups(['rental:read', 'rental:write'])]
+    private ?string $title = null;
+    
+    #[ORM\Column]
+    #[Groups(['rental:read', 'rental:write'])]
+    private ?\DateTimeImmutable $dateTimeOfRendering = null;
 
     #[ORM\Column(length: 50)]
-    private ?string $status = 'pending'; 
+    #[Groups(['rental:read', 'rental:write'])]
+    private ?string $status = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    #[Groups(['rental:read', 'rental:write'])]
     private ?string $rentalPrice = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    #[Groups(['rental:read'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    #[Groups(['rental:read'])]
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'rentals')]
-    #[ORM\JoinColumn(nullable: false)] 
+    #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
     #[ORM\ManyToOne(inversedBy: 'rentals')]
@@ -47,6 +58,7 @@ class Rental
 
     public function __construct()
     {
+        $this->status = 'pending';
         $this->materialRentals = new ArrayCollection();
     }
 
@@ -59,27 +71,37 @@ class Rental
         }
     }
 
+
     #[ORM\PreUpdate]
     public function setUpdatedAtValue(): void
     {
         $this->updatedAt = new \DateTimeImmutable();
     }
 
-
-
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getDateTimeOfRendering(): ?\DateTimeImmutable
+    public function getTitle(): ?string
     {
-        return $this->datetime_of_rendering;
+        return $this->title;
     }
 
-    public function setDateTimeOfRendering(\DateTimeImmutable $datetime_of_rendering): static
+    public function setTitle(string $title): static
     {
-        $this->datetime_of_rendering = $datetime_of_rendering;
+        $this->title = $title;
+        return $this;
+    }
+
+    public function getDateTimeOfRendering(): ?\DateTimeImmutable
+    {
+        return $this->dateTimeOfRendering;
+    }
+
+    public function setDateTimeOfRendering(\DateTimeImmutable $dateTimeOfRendering): static
+    {
+        $this->dateTimeOfRendering = $dateTimeOfRendering;
         return $this;
     }
 

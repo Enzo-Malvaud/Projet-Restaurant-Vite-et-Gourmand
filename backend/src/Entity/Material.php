@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: MaterialRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -15,37 +16,75 @@ class Material
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['material:read'])]
     private ?int $id = null;
 
+    /**
+     * ✅ CORRIGÉ: Ajout des groupes
+     */
     #[ORM\Column(length: 50, unique: true)]
+    #[Groups(['material:read', 'material:write'])]
     private ?string $name = null;
 
+    /**
+     * ✅ CORRIGÉ: Ajout des groupes
+     */
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['material:read', 'material:write'])]
     private ?string $description = null;
 
-    
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)] 
-    private ?string $daily_rental_price = null;
+    /**
+     * ✅ CORRIGÉ: Type float au lieu de string (DECIMAL)
+     */
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    #[Groups(['material:read', 'material:write'])]
+    private ?float $daily_rental_price = null;
 
+    /**
+     * ✅ CORRIGÉ: Ajout des groupes
+     */
     #[ORM\Column]
+    #[Groups(['material:read', 'material:write'])]
     private ?int $total_quantity = null;
 
+    /**
+     * ✅ CORRIGÉ: Ajout des groupes
+     */
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['material:read', 'material:write'])]
     private ?string $picture = null;
 
+    /**
+     * ✅ CORRIGÉ: Type float au lieu de string (DECIMAL)
+     */
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
-    private ?string $caution = null;
+    #[Groups(['material:read', 'material:write'])]
+    private ?float $caution = null;
 
+    /**
+     * ✅ CORRIGÉ: Ajout des groupes
+     */
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['material:read', 'material:write'])]
     private ?string $rental_condition = null;
- 
-   
+
+    /**
+     * ✅ CORRIGÉ: Ajout des groupes
+     */
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    #[Groups(['material:read'])]
     private ?\DateTimeImmutable $createdAt = null;
 
+    /**
+     * ✅ CORRIGÉ: Ajout des groupes
+     */
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    #[Groups(['material:read'])]
     private ?\DateTimeImmutable $updatedAt = null;
 
+    /**
+     * ⚠️ PAS DE GROUPES: Back-reference
+     */
     #[ORM\OneToMany(targetEntity: MaterialRental::class, mappedBy: 'material')]
     private Collection $materialRentals;
 
@@ -54,6 +93,9 @@ class Material
         $this->materialRentals = new ArrayCollection();
     }
 
+    /**
+     * ✅ CORRECT: PrePersist avec vérification null
+     */
     #[ORM\PrePersist]
     public function setCreatedAtValue(): void
     {
@@ -62,13 +104,14 @@ class Material
         }
     }
 
+    /**
+     * ✅ CORRECT: PreUpdate automatique
+     */
     #[ORM\PreUpdate]
     public function setUpdatedAtValue(): void
     {
         $this->updatedAt = new \DateTimeImmutable();
     }
-
-   
 
     public function getId(): ?int
     {
@@ -97,12 +140,18 @@ class Material
         return $this;
     }
 
-    public function getDailyRentalPrice(): ?string
+    /**
+     * ✅ CORRIGÉ: Retourne float au lieu de string
+     */
+    public function getDailyRentalPrice(): ?float
     {
         return $this->daily_rental_price;
     }
 
-    public function setDailyRentalPrice(string $daily_rental_price): static
+    /**
+     * ✅ CORRIGÉ: Accepte float au lieu de string
+     */
+    public function setDailyRentalPrice(float $daily_rental_price): static
     {
         $this->daily_rental_price = $daily_rental_price;
         return $this;
@@ -130,12 +179,18 @@ class Material
         return $this;
     }
 
-    public function getCaution(): ?string
+    /**
+     * ✅ CORRIGÉ: Retourne float au lieu de string
+     */
+    public function getCaution(): ?float
     {
         return $this->caution;
     }
 
-    public function setCaution(string $caution): static
+    /**
+     * ✅ CORRIGÉ: Accepte float au lieu de string
+     */
+    public function setCaution(float $caution): static
     {
         $this->caution = $caution;
         return $this;
@@ -180,5 +235,30 @@ class Material
     public function getMaterialRentals(): Collection
     {
         return $this->materialRentals;
+    }
+
+    /**
+     * ✅ AJOUT: Ajouter une location de matériel
+     */
+    public function addMaterialRental(MaterialRental $materialRental): static
+    {
+        if (!$this->materialRentals->contains($materialRental)) {
+            $this->materialRentals->add($materialRental);
+            $materialRental->setMaterial($this);
+        }
+        return $this;
+    }
+
+    /**
+     * ✅ AJOUT: Retirer une location de matériel
+     */
+    public function removeMaterialRental(MaterialRental $materialRental): static
+    {
+        if ($this->materialRentals->removeElement($materialRental)) {
+            if ($materialRental->getMaterial() === $this) {
+                $materialRental->setMaterial(null);
+            }
+        }
+        return $this;
     }
 }

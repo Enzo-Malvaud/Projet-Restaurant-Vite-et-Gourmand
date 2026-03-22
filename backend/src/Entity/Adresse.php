@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: AdresseRepository::class)]
 #[ORM\HasLifecycleCallbacks] 
@@ -15,24 +16,37 @@ class Adresse
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['adresse:read'])]
     private ?int $id = null;
     
+
     #[ORM\Column(length: 255)]
+    #[Groups(['adresse:read', 'adresse:write'])]
     private ?string $adresse = null;
 
+
     #[ORM\Column(length: 50)]
+    #[Groups(['adresse:read', 'adresse:write'])]
     private ?string $city = null;
 
+
     #[ORM\Column(length: 50)]
+    #[Groups(['adresse:read', 'adresse:write'])]
     private ?string $country = null;
 
-    #[ORM\Column(length: 20)] 
-    private ?string $postalCode = null; 
+
+    #[ORM\Column(length: 20)]
+    #[Groups(['adresse:read', 'adresse:write'])]
+    private ?string $postalCode = null;
+
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    #[Groups(['adresse:read'])]
     private ?\DateTimeImmutable $createdAt = null;
 
+
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    #[Groups(['adresse:read'])]
     private ?\DateTimeImmutable $updatedAt = null;
 
     /**
@@ -46,7 +60,7 @@ class Adresse
         $this->users = new ArrayCollection();
     }
 
- 
+
     #[ORM\PrePersist]
     public function setCreatedAtValue(): void
     {
@@ -55,13 +69,12 @@ class Adresse
         }
     }
 
+
     #[ORM\PreUpdate]
     public function setUpdatedAtValue(): void
     {
         $this->updatedAt = new \DateTimeImmutable();
     }
-
-
 
     public function getId(): ?int
     {
@@ -117,9 +130,22 @@ class Adresse
         return $this->createdAt;
     }
 
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+        return $this;
+    }
+
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
         return $this->updatedAt;
+    }
+
+
+    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
+        return $this;
     }
 
     /**
