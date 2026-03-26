@@ -32,16 +32,17 @@ const LoadContentPage = async () => {
 
   // verification tableaux si sa valeur est superieur à zero donc contient au moins un role
  if(allRolesArray.length > 0){
+    const userRoles = getUserRoles();
+
     if(allRolesArray.includes("disconnected")){
       if(isConnected()){
         window.location.replace("/");
       }
-    }
-    else{
-      const roleUser = getRole();
-      if(!allRolesArray.includes(roleUser)){
-        window.location.replace("/");
-      }
+    } else{
+            const hasAccess = allRolesArray.some(role => userRoles.includes(role));
+            if (!hasAccess) {
+                window.location.replace("/");
+            }
     }
   }
 
@@ -85,3 +86,9 @@ window.onpopstate = LoadContentPage;
 window.route = routeEvent;
 // Chargement du contenu de la page au chargement initial
 LoadContentPage();
+
+// Récupérer les rôles depuis le localStorage
+function getUserRoles() {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    return user.roles || [];
+}
