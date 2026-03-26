@@ -13,6 +13,7 @@ use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use OpenApi\Attributes as OA;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/api', name: 'app_api_')]
 #[OA\Tag(name: 'Users')]
@@ -154,6 +155,7 @@ class SecurityController extends AbstractController
             new OA\Response(response: 404, description: 'Utilisateur non trouvé')
         ]
     )]
+    #[IsGranted('ROLE_USER')]
     public function show(#[CurrentUser] ?User $user): JsonResponse
     {
         if ($user) {
@@ -165,7 +167,7 @@ class SecurityController extends AbstractController
 
         return new JsonResponse(['message' => 'User not found'], Response::HTTP_NOT_FOUND);
     }
-
+    
     #[Route('/edit', name: 'edit_updated', methods: ['PUT'])]
     #[OA\Put(
         path: '/api/edit',
@@ -187,6 +189,7 @@ class SecurityController extends AbstractController
             new OA\Response(response: 404, description: 'Utilisateur non trouvé')
         ]
     )]
+    #[IsGranted('ROLE_USER')]
     public function updated(#[CurrentUser] ?User $user, Request $request, UserPasswordHasherInterface $passwordHasher): JsonResponse
     {
         if ($user) {
