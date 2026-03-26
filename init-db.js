@@ -24,15 +24,9 @@ db.logs.createIndex({ level: 1 });
 // Créer un utilisateur applicatif (pas le root)
 db.createUser({
   user: 'appuser',
-  pwd: 'apppassword123',
-  roles: [
-    {
-      role: 'readWrite',
-      db: 'myapp'
-    }
-  ]
+  pwd: process.env.MONGO_APP_PASSWORD || 'apppassword123',
+  roles: [{ role: 'readWrite', db: 'myapp' }]
 });
-
 // Log de confirmation
 print('✓ MongoDB initialized with collections and indexes');
 print('✓ User "appuser" created');
