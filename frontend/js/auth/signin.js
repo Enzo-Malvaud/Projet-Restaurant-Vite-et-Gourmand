@@ -1,12 +1,12 @@
-
 const signinForm = document.getElementById("signinForm");
 let champSignin = getChampSignin();
 signinForm.innerHTML = champSignin;
+const btnSignin = document.getElementById("btnSignin");
 const inputMail = document.getElementById("EmailInput");
 const inputPassword = document.getElementById("PasswordInput");
-const btnSignin = document.getElementById("btnSignin");
 
-btnSignin.addEventListener("click", checkCredentials );
+
+btnSignin.addEventListener("click", CheckCredentials);
 
 
 function getChampSignin(){
@@ -33,7 +33,8 @@ function getChampSignin(){
 
 
 
-/*function checkCredentials() {
+function CheckCredentials(){
+
     let dataForm = new FormData(signinForm);
 
     let myHeaders = new Headers();
@@ -42,6 +43,7 @@ function getChampSignin(){
     let raw = JSON.stringify({
     "username": dataForm.get("email"),
     "password": dataForm.get("mdp")
+    
     });
 
     let requestOptions = {
@@ -51,28 +53,26 @@ function getChampSignin(){
         redirect: "follow"
     };
 
-
-    fetch(apiUrl+"login", requestOptions)
+    fetch(`${apiUrl}/login`, requestOptions)
     .then((response) => {
         if(response.ok){
             return response.json();
         }
         else{
-        mailInput.classList.add("is-invalid");
-        passwordInput.classList.add("is-invalid");
+
+            throw new Error("Erreur lors de la connexion");
         }
 
     })
     .then((result) => {
-        const token = result.apiToken;
 
-        setToken(token);
-
-  
-        setCookie(RoleCookieName, result.roles[0], 7);
-        window.location.replace("/");
+        localStorage.setItem('apiToken', result.apiToken);
+        alert("Bravo, "+ result.user +" vous êtes maintenant connecté.");
+        document.location.href="/home";
     })
-    .catch((error) => console.error(error));
-} */
-
-
+    .catch((error) => {
+        
+        console.error("Erreur attrapée :", error);
+        alert(error.message || "Une erreur de communication est survenue.");
+    });
+}
