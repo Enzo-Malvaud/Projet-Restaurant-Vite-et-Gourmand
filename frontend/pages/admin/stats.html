@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Admin NoSQL</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: sans-serif; background: #f4f7f6;}
+        .chart-container { width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; opacity: 0 2px 10px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+    <div class="chart-container">
+        <h1>Graphique des Ventes (MongoDB)</h1>
+        <canvas id="myChart"></canvas>
+    </div>
+
+    <script>
+        async function loadData() {
+            try {
+                // Requête fetch vers ton API Symfony
+                const response = await fetch('/api/admin/stats/menus');
+                const data = await response.json();
+
+                const ctx = document.getElementById('myChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.map(d => d._id),
+                        datasets: [{
+                            label: 'Chiffre d\'Affaires (€)',
+                            data: data.map(d => d.caTotal),
+                            backgroundColor: '#3498db'
+                        }]
+                    }
+                });
+            } catch (e) {
+                console.error("Erreur lors du fetch :", e);
+            }
+        }
+        loadData();
+    </script>
+</body>
+</html>
