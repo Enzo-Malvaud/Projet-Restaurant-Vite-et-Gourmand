@@ -9,6 +9,8 @@
         "ext-iconv": "*",
         "doctrine/doctrine-bundle": "^3.2",
         "doctrine/doctrine-migrations-bundle": "^4.0",
+        "doctrine/mongodb-odm": "2.15.3",
+        "doctrine/mongodb-odm-bundle": "^5.5.2",
         "doctrine/orm": "^3.6",
         "nelmio/api-doc-bundle": "^5.9",
         "nelmio/cors-bundle": "^2.6",
@@ -96,7 +98,7 @@
     },
     "extra": {
         "symfony": {
-            "allow-contrib": false,
+            "allow-contrib": "true",
             "require": "8.0.*"
         }
     },

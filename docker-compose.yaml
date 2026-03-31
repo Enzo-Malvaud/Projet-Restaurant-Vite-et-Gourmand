@@ -30,7 +30,7 @@ services:
     restart: always
     volumes:
       - ./backend:/var/www/backend
-      - /var/www/backend/vendor
+      - ./backend/vendor:/var/www/backend/vendor
     depends_on:
       db:
         condition: service_healthy
