@@ -297,6 +297,9 @@ MONGO_DATABASE=vite_et_gourmand_prod
 
 # En production, ne pas exposer le port sur l'hôte.
 
+MONGO_HOST=mongodb
+MONGO_PORT=27017
+
  
 MONGODB_URI="mongodb://${MONGO_ROOT_USER}:${MONGO_ROOT_PASSWORD}@${MONGO_HOST}:${MONGO_PORT}/${MONGO_DATABASE}?authSource=admin"
 # URI de connexion MongoDB pour l'application PHP.
@@ -309,7 +312,7 @@ NGINX_PORT=80
 
 # ── CORS ──────────────────────────────────────────────────────────────────────
  
-CORS_ALLOW_ORIGIN='^https://www\.viteetgourmand\.fr$'
+CORS_ALLOW_ORIGIN='^http://(www\.)?viteetgourmand\.ddns\.net$'
 # En production, restreindre strictement aux domaines autorisés.
 # ⚠️ Remplacer par le vrai domaine de l'application.
 ```
