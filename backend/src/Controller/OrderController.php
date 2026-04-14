@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Order;
+use App\Repository\MenuRepository;
+use App\Repository\NoticeRepository;
 use App\Repository\OrderRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -13,6 +15,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use OpenApi\Attributes as OA;
+use Symfony\Component\Uid\Uuid;
 
 #[Route('/api/orders', name: 'app_api_order_')]
 #[OA\Tag(name: 'Orders')]
@@ -22,10 +25,11 @@ class OrderController extends AbstractController
         private EntityManagerInterface $manager,
         private OrderRepository $repository,
         private UserRepository $userRepository,
+        private NoticeRepository $noticeRepository,
         private SerializerInterface $serializer,
         private UrlGeneratorInterface $urlGenerator,
     ) {}
-   
+
     #[Route('', name: 'new', methods: ['POST'])]
     #[OA\Post(
         path: '/api/orders',
@@ -34,50 +38,71 @@ class OrderController extends AbstractController
             required: true,
             content: new OA\JsonContent(
                 properties: [
+                    new OA\Property(property: 'title', type: 'string', example: 'Commande anniversaire'),
                     new OA\Property(property: 'delivery_datetime', type: 'string', format: 'date-time', example: '2026-04-15T18:30:00Z'),
                     new OA\Property(property: 'number_of_persons', type: 'integer', example: 4),
                     new OA\Property(property: 'status', type: 'string', example: 'pending'),
-                    new OA\Property(property: 'order_price', type: 'number', example: 50.00),
-                    new OA\Property(property: 'delivery_price', type: 'number', example: 5.00),
-                    new OA\Property(property: 'total_price', type: 'number', example: 55.00),
-                    new OA\Property(property: 'user', type: 'integer', example: 1),
-                    new OA\Property(property: 'notice', type: 'integer', example: 1)
+                    new OA\Property(property: 'user', type: 'string', example: "019d405a-6333-7052-8a04-52261ae33ad1"),
+                    new OA\Property(property: 'notice', type: 'integer', example: 1, nullable: true),
                 ]
             )
         ),
         responses: [
             new OA\Response(response: 201, description: 'Commande créée avec succès'),
-            new OA\Response(response: 400, description: 'Données invalides')
+            new OA\Response(response: 400, description: 'Données invalides'),
+            new OA\Response(response: 404, description: 'User ou Notice introuvable'),
         ]
     )]
     public function new(Request $request): JsonResponse
     {
-
-        $order = $this->serializer->deserialize($request->getContent(), Order::class, 'json', [
-            AbstractNormalizer::GROUPS => ['order:write']
-        ]);
-
+        // 1. Décodage JSON brut
         $data = json_decode($request->getContent(), true);
-
-
-        if (isset($data['user']) && is_int($data['user'])) {
-            $user = $this->userRepository->find($data['user']);
-            if ($user) {
-                $order->setUser($user);
-            } else {
-                return new JsonResponse(['message' => 'User not found'], Response::HTTP_BAD_REQUEST);
-            }
-        } else {
-            return new JsonResponse(['message' => 'User is required'], Response::HTTP_BAD_REQUEST);
+        if (!$data) {
+            return new JsonResponse(['message' => 'Invalid JSON body'], Response::HTTP_BAD_REQUEST);
         }
 
+        // 2. Désérialisation des champs scalaires (title, delivery_datetime, number_of_persons, status)
+        /** @var Order $order */
+        $order = $this->serializer->deserialize(
+            $request->getContent(),
+            Order::class,
+            'json',
+            [AbstractNormalizer::GROUPS => ['order:write']]
+        );
 
+        // 3. Résolution User (obligatoire)
+        // APRÈS
+        if (!isset($data['user']) || !is_string($data['user'])) {
+        return new JsonResponse(['message' => 'Field "user" is required and must be a UUID string'], Response::HTTP_BAD_REQUEST);
+        }
+        $user = $this->userRepository->find(Uuid::fromString($data['user']));
+        if (!$user) {
+            return new JsonResponse(['message' => sprintf('User #%d not found', $data['user'])], Response::HTTP_NOT_FOUND);
+        }
+        $order->setUser($user);
+
+        // 4. Résolution Notice (optionnelle)
+        if (isset($data['notice']) && is_int($data['notice'])) {
+            $notice = $this->noticeRepository->find($data['notice']);
+            if (!$notice) {
+                return new JsonResponse(['message' => sprintf('Notice #%d not found', $data['notice'])], Response::HTTP_NOT_FOUND);
+            }
+            $order->setNotice($notice);
+        }
+
+        // 5. Initialisation des prix (les items seront ajoutés via OrderItemController)
+        $order->setOrderPrice(0.0);
+        $order->setDeliveryPrice(5.00);
+        $order->setTotalPrice(5.00);
+
+        // 6. Persistance
         $this->manager->persist($order);
         $this->manager->flush();
 
         $responseData = $this->serializer->serialize($order, 'json', [
             AbstractNormalizer::GROUPS => ['order:read']
         ]);
+
         $location = $this->urlGenerator->generate(
             'app_api_order_show',
             ['id' => $order->getId()],
@@ -101,7 +126,6 @@ class OrderController extends AbstractController
     {
         $order = $this->repository->findOneBy(['id' => $id]);
         if ($order) {
-
             $responseData = $this->serializer->serialize($order, 'json', [
                 AbstractNormalizer::GROUPS => ['order:read']
             ]);
@@ -134,7 +158,6 @@ class OrderController extends AbstractController
     {
         $order = $this->repository->findOneBy(['id' => $id]);
         if ($order) {
-
             $this->serializer->deserialize(
                 $request->getContent(),
                 Order::class,
@@ -174,7 +197,6 @@ class OrderController extends AbstractController
 
         return new JsonResponse(['message' => 'Order not found'], Response::HTTP_NOT_FOUND);
     }
-
 
     #[Route('', name: 'list', methods: ['GET'])]
     #[OA\Get(

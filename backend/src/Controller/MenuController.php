@@ -56,7 +56,7 @@ class MenuController extends AbstractController
                     new OA\Property(property: 'title_menu', type: 'string', example: 'Menu Dégustation'),
                     new OA\Property(property: 'description', type: 'string', example: 'Menu gastronomique'),
                     new OA\Property(property: 'minimum_number_of_persons', type: 'integer', example: 4),
-                    new OA\Property(property: 'price_menu', type: 'number', example: 75.50),
+                    new OA\Property(property: 'price_menu', type: 'string', example: "75.50"),
                     new OA\Property(property: 'remaining_quantity', type: 'integer', example: 10),
                     new OA\Property(property: 'precaution_menu', type: 'string', example: 'Peut contenir des arachides'),
                     new OA\Property(property: 'storage_precautions', type: 'string', example: 'Conserver à 4°C')
