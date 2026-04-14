@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="/css/style.css">
   <title>Vite et gourmand</title>
 </head>
-
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <body>
   <header class="sticky-top">
     <nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
@@ -31,20 +31,24 @@
             <li class="nav-item">
               <a class="nav-link " href="/">Accueil</a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/ourmenus">Nos Nenus</a>
+            <li class="nav-item" data-show="connecter">
+              <a class="nav-link" href="/user/orderform">Commander</a>
             </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/ourmenus">Nos menus</a>
+            </li>
+            
             <li class="nav-item">
               <a class="nav-link" href="/ourrentals">Locations</a>
             </li>
-            <li class="nav-item" data-show="connected">
-              <a class="nav-link" href="/allrésa">Les réservations</a>
+            <li class="nav-item" data-show="ROLE_USER">
+              <a class="nav-link" href="/user/rentals">Mes Locations</a>
             </li>
-            <li class="nav-item" data-show="connected">
-              <a class="nav-link" href="/ordermenu">Commander</a>
+            <li class="nav-item" data-show="ROLE_USER">
+              <a class="nav-link" href="/user/orders">Mes commandes</a>
             </li>
-            <li class="nav-item" data-show="connected">
-              <a class="nav-link" href="/account">Mon Compte</a>
+            <li class="nav-item" data-show="ROLE_USER">
+              <a class="nav-link" href="/user/dashboard">Mon Espace</a>
             </li>
             </li>
             <li class="nav-item">
@@ -56,7 +60,10 @@
             <li class="nav-item" data-show="disconnected">
               <a class="nav-link" href="/signin">Connexion</a>
             </li>
-            <li class="nav-item" data-show="connected">
+            <li class="nav-item" data-show="ROLE_ADMIN">
+              <a class="nav-link" href="/admin/dashboard/stats">Pages des ventes</a>
+            </li>
+            <li class="nav-item" data-show="ROLE_USER">
               <button class="nav-link" id="signout-btn">Déconnexion</button>
             </li>
           </ul>

@@ -4,7 +4,19 @@ const signoutBtn = document.getElementById("signout-btn");
 //url à modifier avec l'api déployer
 const base = window.location.origin;
 const apiUrl = `${base}/api`;
-signoutBtn.addEventListener("click", signout);
+
+const ROLES_HIERARCHY = {
+    "ROLE_ADMIN": 3,
+    "ROLE_EMPLOYEE": 2,
+    "ROLE_USER": 1,
+    "connected": 1,
+    "disconnected": 0
+};
+
+if (signoutBtn) {
+    signoutBtn.addEventListener("click", signout);
+}
+
 
 //retourne le cookie role
 function getRole() {
@@ -43,17 +55,17 @@ function setCookie(name,value,days) {
     var expires = "";
     if (days) {
         var date = new Date();
-        date.setTime(date.getTime() + (days*24*60*60*1000));
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
         expires = "; expires=" + date.toUTCString();
     }
-    document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+    document.cookie = name + "=" + (value || "") + expires + "; path=/; Secure; SameSite=Strict";
 }
 //function récuperer cookie
 function getCookie(name) {
     var nameEQ = name + "=";
     var ca = document.cookie.split(';');
     for(var i=0;i < ca.length;i++) {
-        var c = ca[i];
+        var c = ca[i].trim();
         while (c.charAt(0)==' ') c = c.substring(1,c.length);
         if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
     }
@@ -66,7 +78,7 @@ function eraseCookie(name) {
 
 //function permettant de savoir si je suis connecté ou non
 function isConnected(){
-    if(getToken() == null || getToken == undefined){
+    if(getToken() == null || getToken() == undefined){
         return false;
     }
     else{
@@ -83,38 +95,33 @@ function isConnected(){
  * client
  */
 
-function showAndHideElementsForRoles(){
+function showAndHideElementsForRoles() {
     const userConnected = isConnected();
-    const role = getRole();
+    const userRole = getRole() || "disconnected"; // "disconnected" si pas de cookie
+    
+    // On récupère le poids du rôle actuel de l'utilisateur
+    const userWeight = userConnected ? (ROLES_HIERARCHY[userRole] || 1) : 0;
 
-    let allElementsToEdit = document.querySelectorAll('[data-show]');
+    document.querySelectorAll('[data-show]').forEach(element => {
+        const requirement = element.dataset.show;
+        element.classList.add("d-none"); // On cache par défaut
 
-    allElementsToEdit.forEach(element =>{
-        //dataset object de node me permet de récupérer tous les datashows
-        switch(element.dataset.show){
-            case 'disconnected':
-                if(userConnected){
-                   element.classList.add("d-none");
-                }
-                break;
-            case 'connected':
-                if(!userConnected){
-                    element.classList.add("d-none");
-                }
-                break;
-            case 'admin':
-                    if(!userConnected || role != "admin"){
-                    element.classList.add("d-none");
-                }
-                break;
-            case 'client':
-                 if(!userConnected || role != "client"){
-                    element.classList.add("d-none");
-                }
-                break;
+        if (requirement === 'disconnected') {
+            if (!userConnected) element.classList.remove("d-none");
+        } 
+        else if (requirement === 'connected') {
+            if (userConnected) element.classList.remove("d-none");
+        } 
+        else {
+            // Logique de hiérarchie : si le poids de l'user >= poids requis
+            const requiredWeight = ROLES_HIERARCHY[requirement] || 0;
+            if (userConnected && userWeight >= requiredWeight) {
+                element.classList.remove("d-none");
+            }
         }
-    })
+    });
 }
+
 //function permettant de sécuriser entrer utilisareur 
 function sanitizeHtml(text){
     const tempHtml = document.createElement('div');

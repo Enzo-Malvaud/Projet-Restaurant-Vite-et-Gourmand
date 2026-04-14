@@ -1,0 +1,65 @@
+<div class="container py-5" style="max-width: 600px;">
+
+    <h2 class="mb-4 text-center">Passer une commande</h2>
+
+    <!-- Message erreur -->
+    <div class="alert alert-danger" id="error-msg" style="display:none;"></div>
+    <!-- Message succès -->
+    <div class="alert alert-success" id="success-msg" style="display:none;"></div>
+
+    <!-- Formulaire -->
+    <div id="order-form">
+
+        <div class="mb-3">
+            <label for="order-title" class="form-label">Titre de la commande</label>
+            <input type="text" class="form-control" id="order-title" placeholder="Ex: Commande anniversaire">
+        </div>
+
+        <div class="mb-3">
+            <label for="order-date" class="form-label">Date et heure de livraison</label>
+            <input type="datetime-local" class="form-control" id="order-date">
+        </div>
+
+        <div class="mb-3">
+            <label for="order-persons" class="form-label">Nombre de personnes</label>
+            <input type="number" class="form-control" id="order-persons" min="1" max="5" value="1">
+        </div>
+
+        <div class="mb-3">
+            <label for="order-menu" class="form-label">Menu</label>
+            <select class="form-select" id="order-menu">
+                <option value="">-- Choisir un menu --</option>
+            </select>
+        </div>
+
+        <!-- Résumé du menu sélectionné -->
+        <div class="card mb-3 bg-light" id="menu-summary" style="display:none;">
+            <div class="card-body">
+                <p class="mb-1">Prix unitaire : <strong id="summary-price">—</strong> €</p>
+                <p class="mb-0">Stock disponible : <strong id="summary-stock">—</strong></p>
+            </div>
+        </div>
+
+        <!-- Récapitulatif prix -->
+        <div class="card mb-4">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <span class="text-muted">Sous-total menus</span>
+                <span id="subtotal">—</span>
+            </div>
+            <div class="card-body d-flex justify-content-between align-items-center border-top">
+                <span class="text-muted">Frais de livraison</span>
+                <span>5.00 €</span>
+            </div>
+            <div class="card-body d-flex justify-content-between align-items-center border-top">
+                <strong>Total</strong>
+                <strong id="total-estimate">—</strong>
+            </div>
+        </div>
+
+        <div class="d-grid">
+            <button class="btn btn-primary" id="btn-submit">Confirmer la commande</button>
+        </div>
+
+    </div>
+
+</div>

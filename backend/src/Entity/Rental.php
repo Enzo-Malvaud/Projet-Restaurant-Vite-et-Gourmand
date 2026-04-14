@@ -3,160 +3,138 @@
 namespace App\Entity;
 
 use App\Repository\RentalRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: RentalRepository::class)]
+#[ORM\HasLifecycleCallbacks] 
 class Rental
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['rental:read'])]
     private ?int $id = null;
-
+    
     #[ORM\Column]
-    private ?\DateTimeImmutable $date_rental = null;
-
+    #[Groups(['rental:read', 'rental:write'])]
+    private ?string $title = null;
+    
     #[ORM\Column]
-    private ?\DateTimeImmutable $date_of_rendering = null;
+    #[Groups(['rental:read', 'rental:write'])]
+    private ?\DateTimeImmutable $dateTimeOfRendering = null;
 
-    #[ORM\Column]
-    private ?\DateTimeImmutable $rendering_time = null;
+    #[ORM\Column(length: 50)]
+    #[Groups(['rental:read', 'rental:write'])]
+    private ?string $status = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 0)]
-    private ?string $rental_price = null;
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    #[Groups(['rental:read', 'rental:write'])]
+    private ?string $rentalPrice = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $date_of_modification = null;
-
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Adresse $adresse = null;
-
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Material $material = null;
-
-    #[ORM\Column(type: Types::DATE_IMMUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    #[Groups(['rental:read'])]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    #[Groups(['rental:read'])]
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'rentals')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
+
+    #[ORM\ManyToOne(inversedBy: 'rentals')]
+    private ?Notice $notice = null;
+
+    /**
+     * @var Collection<int, MaterialRental>
+     */
+    #[ORM\OneToMany(targetEntity: MaterialRental::class, mappedBy: 'rental', orphanRemoval: true)]
+    private Collection $materialRentals;
+
+    public function __construct()
+    {
+        $this->status = 'pending';
+        $this->materialRentals = new ArrayCollection();
+    }
+
+
+    #[ORM\PrePersist]
+    public function setCreatedAtValue(): void
+    {
+        if ($this->createdAt === null) {
+            $this->createdAt = new \DateTimeImmutable();
+        }
+    }
+
+
+    #[ORM\PreUpdate]
+    public function setUpdatedAtValue(): void
+    {
+        $this->updatedAt = new \DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getDateRental(): ?\DateTimeImmutable
+    public function getTitle(): ?string
     {
-        return $this->date_rental;
+        return $this->title;
     }
 
-    public function setDateRental(\DateTimeImmutable $date_rental): static
+    public function setTitle(string $title): static
     {
-        $this->date_rental = $date_rental;
-
+        $this->title = $title;
         return $this;
     }
 
-    public function getDateOfRendering(): ?\DateTimeImmutable
+    public function getDateTimeOfRendering(): ?\DateTimeImmutable
     {
-        return $this->date_of_rendering;
+        return $this->dateTimeOfRendering;
     }
 
-    public function setDateOfRendering(\DateTimeImmutable $date_of_rendering): static
+    public function setDateTimeOfRendering(\DateTimeImmutable $dateTimeOfRendering): static
     {
-        $this->date_of_rendering = $date_of_rendering;
-
+        $this->dateTimeOfRendering = $dateTimeOfRendering;
         return $this;
     }
 
-    public function getRenderingTime(): ?\DateTimeImmutable
+    public function getStatus(): ?string
     {
-        return $this->rendering_time;
+        return $this->status;
     }
 
-    public function setRenderingTime(\DateTimeImmutable $rendering_time): static
+    public function setStatus(?string $status): static
     {
-        $this->rendering_time = $rendering_time;
-
+        $this->status = $status;
         return $this;
     }
 
     public function getRentalPrice(): ?string
     {
-        return $this->rental_price;
+        return $this->rentalPrice;
     }
 
-    public function setRentalPrice(string $rental_price): static
+    public function setRentalPrice(string $rentalPrice): static
     {
-        $this->rental_price = $rental_price;
-
+        $this->rentalPrice = $rentalPrice;
         return $this;
     }
 
-    public function getDateOfModification(): ?\DateTimeImmutable
-    {
-        return $this->date_of_modification;
-    }
-
-    public function setDateOfModification(?\DateTimeImmutable $date_of_modification): static
-    {
-        $this->date_of_modification = $date_of_modification;
-
-        return $this;
-    }
-
-    public function getAdresse(): ?Adresse
-    {
-        return $this->adresse;
-    }
-
-    public function setAdresse(?Adresse $adresse): static
-    {
-        $this->adresse = $adresse;
-
-        return $this;
-    }
-
-    public function getMaterial(): ?Material
-    {
-        return $this->material;
-    }
-
-    public function setMaterial(?Material $material): static
-    {
-        $this->material = $material;
-
-        return $this;
-    }
-
-        public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
     }
 
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
         return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
-    {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
     }
 
     public function getUser(): ?User
@@ -167,7 +145,44 @@ class Rental
     public function setUser(?User $user): static
     {
         $this->user = $user;
+        return $this;
+    }
 
+    public function getNotice(): ?Notice
+    {
+        return $this->notice;
+    }
+
+    public function setNotice(?Notice $notice): static
+    {
+        $this->notice = $notice;
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, MaterialRental>
+     */
+    public function getMaterialRentals(): Collection
+    {
+        return $this->materialRentals;
+    }
+
+    public function addMaterialRental(MaterialRental $materialRental): static
+    {
+        if (!$this->materialRentals->contains($materialRental)) {
+            $this->materialRentals->add($materialRental);
+            $materialRental->setRental($this);
+        }
+        return $this;
+    }
+
+    public function removeMaterialRental(MaterialRental $materialRental): static
+    {
+        if ($this->materialRentals->removeElement($materialRental)) {
+            if ($materialRental->getRental() === $this) {
+                $materialRental->setRental(null);
+            }
+        }
         return $this;
     }
 }

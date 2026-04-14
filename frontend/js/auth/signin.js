@@ -1,13 +1,12 @@
-
 const signinForm = document.getElementById("signinForm");
 let champSignin = getChampSignin();
 signinForm.innerHTML = champSignin;
+const btnSignin = document.getElementById("btnSignin");
 const inputMail = document.getElementById("EmailInput");
 const inputPassword = document.getElementById("PasswordInput");
-const btnSignin = document.getElementById("btnSignin");
 
-btnSignin.addEventListener("click", checkCredentials );
 
+btnSignin.addEventListener("click", CheckCredentials);
 
 function getChampSignin(){
    let email = sanitizeHtml();
@@ -30,49 +29,47 @@ function getChampSignin(){
 
 }
 
-
-
-
-/*function checkCredentials() {
+function CheckCredentials() {
     let dataForm = new FormData(signinForm);
+    // On récupère les inputs pour gérer l'affichage d'erreur
+    const mailInput = document.getElementById("EmailInput");
+    const passwordInput = document.getElementById("PasswordInput");
 
     let myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
 
     let raw = JSON.stringify({
-    "username": dataForm.get("email"),
-    "password": dataForm.get("mdp")
+        "email": dataForm.get("email"),
+        "password": dataForm.get("mdp")
     });
 
-    let requestOptions = {
+    fetch(`${apiUrl}/login`, {
         method: "POST",
         headers: myHeaders,
-        body: raw,
-        redirect: "follow"
-    };
-
-
-    fetch(apiUrl+"login", requestOptions)
+        body: raw
+    })
     .then((response) => {
-        if(response.ok){
-            return response.json();
-        }
-        else{
-        mailInput.classList.add("is-invalid");
-        passwordInput.classList.add("is-invalid");
-        }
-
+        if (response.ok) return response.json();
+        throw new Error("Identifiants incorrects");
     })
     .then((result) => {
-        const token = result.apiToken;
+        setToken(result.apiToken);
 
-        setToken(token);
+        if (result.roles && result.roles.length > 0) {
+            let roleToStore = "ROLE_USER";
+            if (result.roles.includes("ROLE_ADMIN")) roleToStore = "ROLE_ADMIN";
+            else if (result.roles.includes("ROLE_EMPLOYEE")) roleToStore = "ROLE_EMPLOYEE";
 
-  
-        setCookie(RoleCookieName, result.roles[0], 7);
-        window.location.replace("/");
+            setCookie(RoleCookieName, roleToStore, 7);
+        }
+
+        alert(`Bienvenue ${result.user}`);
+        window.location.href = "/";
     })
-    .catch((error) => console.error(error));
-} */
-
-
+    .catch((error) => {
+        console.error("Erreur :", error);
+        // Utilisation des bonnes variables pour Bootstrap
+        mailInput.classList.add("is-invalid");
+        passwordInput.classList.add("is-invalid");
+    });
+}

@@ -1,11 +1,9 @@
 //Implémenter le JS de ma page
 
-
-
-const btnValidation = document.getElementById("btn-validation-inscription");
 const formSignup = document.getElementById("signupForm");
 let champSignup = getChampSignup();
 formSignup.innerHTML = champSignup;
+const btnValidation = document.getElementById("btn-validation-inscription");
 const inputNom = document.getElementById("NomInput");
 const inputPreNom = document.getElementById("PrenomInput");
 const inputMail = document.getElementById("EmailInput");
@@ -18,7 +16,7 @@ inputPreNom.addEventListener("keyup", validateForm);
 inputMail.addEventListener("keyup", validateForm);
 inputPassword.addEventListener("keyup", validateForm);
 inputValidationPassword.addEventListener("keyup", validateForm);
-btnValidation.addEventListener("click", InscrireUtilisateur );
+btnValidation.addEventListener("click",  signupUser);
 
 function getChampSignup(){
    let nom = sanitizeHtml();
@@ -76,9 +74,7 @@ function getChampSignup(){
     </div>
     <div class="text-center">
     <button type="button" class="btn btn-primary" id="btn-validation-inscription">Inscrivez-vous</button>
-    </div>  
-`;
-
+    </div>  `;
 }
 
 
@@ -176,18 +172,22 @@ function validateConfirmationPassword(inputPwd, inputConfirmPwd){
     }
 }
 
-/*function InscrireUtilisateur(){
+function signupUser(){
+
+    if (event) event.preventDefault();
+
     let dataForm = new FormData(formSignup);
 
     let myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
 
     let raw = JSON.stringify({
-    "firstName": dataForm.get("nom"),
-    "lastName": dataForm.get("prenom"),
     "email": dataForm.get("email"),
-    "numéro": dataForm.get("num"),
-    "password": dataForm.get("mdp")
+    "password": dataForm.get("mdp"),
+    "numero": dataForm.get("num"),
+    "firstName": dataForm.get("nom"),
+    "lastName": dataForm.get("prenom")
+    
     });
 
     let requestOptions = {
@@ -197,19 +197,25 @@ function validateConfirmationPassword(inputPwd, inputConfirmPwd){
         redirect: "follow"
     };
 
-    fetch(apiUrl+"registration", requestOptions)
+    fetch(`${apiUrl}/registration`, requestOptions)
     .then((response) => {
         if(response.ok){
             return response.json();
         }
         else{
-            alert("Erreur lors de l'inscription");
+
+            throw new Error("Erreur lors de l'inscription");
         }
 
     })
     .then((result) => {
-        alert("Bravo, "+dataForm.get("prenom")+" vous êtes maintenant inscrit, vous pouvez vous connecter.")
-        document.location.href="/signin"
+        
+        alert("Bravo, "+ dataForm.get("prenom")+" vous êtes maintenant inscrit, vous pouvez vous connecter.");
+        document.location.href="/signin";
     })
-    .catch((error) => console.error(error));
-}*/
+    .catch((error) => {
+        
+        console.error("Erreur attrapée :", error);
+        alert(error.message || "Une erreur de communication est survenue.");
+    });
+}

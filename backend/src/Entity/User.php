@@ -10,48 +10,57 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
+#[ORM\HasLifecycleCallbacks] 
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator('doctrine.uuid_generator')]
+    #[Groups(['user:read', 'order:read'])]
     private ?Uuid $id = null;
 
-    #[ORM\Column(length: 180)]
+    #[ORM\Column(length: 180, unique: true)]
+    #[Groups(['user:read', 'user:write', 'order:read'])]
     private ?string $email = null;
 
     /**
      * @var list<string> The user roles
      */
     #[ORM\Column]
+    #[Groups(['user:read'])]
     private array $roles = [];
+    
+    #[ORM\Column(length: 255)]
+    #[Groups(['user:read', 'user:write', 'order:read' ])]
+    private ?string $lastName = null;
 
+    #[ORM\Column(length: 255)]
+    #[Groups(['user:read', 'user:write', 'order:read'])]
+    private ?string $firstName = null;
+ 
     /**
      * @var string The hashed password
      */
-    #[ORM\Column]
+    #[Groups(['user:write'])]
+    #[ORM\Column(length: 255)]
     private ?string $password = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['user:read', 'user:write'])]
+    private ?string $numero = null;
 
     #[ORM\Column(length: 255)]
     private ?string $apiToken = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $numero = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $firstName = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $lastName = null;
-
-    #[ORM\Column(type: Types::DATE_IMMUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
     /**
@@ -64,13 +73,37 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var Collection<int, Rental>
      */
     #[ORM\OneToMany(targetEntity: Rental::class, mappedBy: 'user')]
-    private Collection $rental;
-    // cette fonction permet de créer automatiquement un token de l'api a l'utilisateur instancié en base.
+    private Collection $rentals;
+
+    /**
+     * @var Collection<int, Adresse>
+     */
+    #[ORM\ManyToMany(targetEntity: Adresse::class, inversedBy: 'users')]
+    private Collection $adresses;
+
+ 
+
     public function __construct()
     {
         $this->apiToken = bin2hex(random_bytes(20));
         $this->orders = new ArrayCollection();
-        $this->rental = new ArrayCollection();
+        $this->rentals = new ArrayCollection();
+        $this->adresses = new ArrayCollection();
+    }
+
+
+    #[ORM\PrePersist]
+    public function setCreatedAtValue(): void
+    {
+        if ($this->createdAt === null) {
+            $this->createdAt = new \DateTimeImmutable();
+        }
+    }
+
+    #[ORM\PreUpdate]
+    public function setUpdatedAtValue(): void
+    {
+        $this->updatedAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?Uuid
@@ -90,31 +123,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * A visual identifier that represents this user.
-     *
-     * @see UserInterface
-     */
     public function getUserIdentifier(): string
     {
         return (string) $this->email;
     }
 
-    /**
-     * @see UserInterface
-     */
     public function getRoles(): array
     {
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
         $roles[] = 'ROLE_USER';
 
         return array_unique($roles);
     }
 
-    /**
-     * @param list<string> $roles
-     */
     public function setRoles(array $roles): static
     {
         $this->roles = $roles;
@@ -122,9 +143,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @see PasswordAuthenticatedUserInterface
-     */
+    public function getLastName(): ?string
+    {
+        return $this->lastName;
+    }
+
+    public function setLastName(string $lastName): static
+    {
+        $this->lastName = $lastName;
+
+        return $this;
+    }
+
+    public function getFirstName(): ?string
+    {
+        return $this->firstName;
+    }
+
+    public function setFirstName(string $firstName): static
+    {
+        $this->firstName = $firstName;
+
+        return $this;
+    }
+
     public function getPassword(): ?string
     {
         return $this->password;
@@ -137,9 +179,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * Ensure the session doesn't contain actual password hashes by CRC32C-hashing them, as supported since Symfony 7.3.
-     */
+    public function getNumero(): ?string
+    {
+        return $this->numero;
+    }
+
+    public function setNumero(?string $numero): static
+    {
+        $this->numero = $numero;
+
+        return $this;
+    }
+
     public function __serialize(): array
     {
         $data = (array) $this;
@@ -160,43 +211,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getNumero(): ?string
-    {
-        return $this->numero;
-    }
-
-    public function setNumero(?string $numero): static
-    {
-        $this->numero = $numero;
-
-        return $this;
-    }
-
-    public function getFirstName(): ?string
-    {
-        return $this->firstName;
-    }
-
-    public function setFirstName(string $firstName): static
-    {
-        $this->firstName = $firstName;
-
-        return $this;
-    }
-
-    public function getLastName(): ?string
-    {
-        return $this->lastName;
-    }
-
-    public function setLastName(string $lastName): static
-    {
-        $this->lastName = $lastName;
-
-        return $this;
-    }
-
-        public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
     }
@@ -220,7 +235,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-
     /**
      * @return Collection<int, Order>
      */
@@ -242,7 +256,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeOrder(Order $order): static
     {
         if ($this->orders->removeElement($order)) {
-            // set the owning side to null (unless already changed)
             if ($order->getUser() === $this) {
                 $order->setUser(null);
             }
@@ -254,15 +267,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return Collection<int, Rental>
      */
-    public function getRental(): Collection
+    public function getRentals(): Collection 
     {
-        return $this->rental;
+        return $this->rentals;
     }
 
     public function addRental(Rental $rental): static
     {
-        if (!$this->rental->contains($rental)) {
-            $this->rental->add($rental);
+        if (!$this->rentals->contains($rental)) {
+            $this->rentals->add($rental);
             $rental->setUser($this);
         }
 
@@ -271,8 +284,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function removeRental(Rental $rental): static
     {
-        if ($this->rental->removeElement($rental)) {
-            // set the owning side to null (unless already changed)
+        if ($this->rentals->removeElement($rental)) {
             if ($rental->getUser() === $this) {
                 $rental->setUser(null);
             }
@@ -281,5 +293,32 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    /**
+     * @return Collection<int, Adresse>
+     */
+    public function getAdresses(): Collection
+    {
+        return $this->adresses;
+    }
 
+    public function addAdresse(Adresse $adresse): static
+    {
+        if (!$this->adresses->contains($adresse)) {
+            $this->adresses->add($adresse);
+        }
+
+        return $this;
+    }
+
+    public function removeAdresse(Adresse $adresse): static
+    {
+        $this->adresses->removeElement($adresse);
+
+        return $this;
+    }
+
+    public function eraseCredentials(): void
+    {
+        // $this->plainPassword = null;
+    }
 }

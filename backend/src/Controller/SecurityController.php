@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\User;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use App\Repository\UserRepository;
-use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{JsonResponse, Request, Response};
@@ -14,6 +13,7 @@ use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use OpenApi\Attributes as OA;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/api', name: 'app_api_')]
 #[OA\Tag(name: 'Users')]
@@ -52,16 +52,28 @@ class SecurityController extends AbstractController
                         new OA\Property(property: "roles", type: "array", items: new OA\Items(type: 'string', example: 'ROLE_USER'))
                     ]
                 )
+            ),
+            new OA\Response(
+                response: 409,
+                description: 'Email déjà utilisé'
             )
         ]
     )]
     public function register(Request $request, UserPasswordHasherInterface $passwordHasher): JsonResponse
     {
-        $user = $this->serializer->deserialize($request->getContent(), User::class, 'json');
+        $data = json_decode($request->getContent(), true);
+
+        // Vérifier si l'email existe déjà
+        if ($this->repository->findOneBy(['email' => $data['email'] ?? null])) {
+            return new JsonResponse(['message' => 'Email déjà utilisé'], Response::HTTP_CONFLICT);
+        }
+
+        $user = $this->serializer->deserialize($request->getContent(), User::class, 'json', [
+            AbstractNormalizer::GROUPS => ['user:write']
+        ]);
         
         // Hachage du mot de passe récupéré du désérialiseur
         $user->setPassword($passwordHasher->hashPassword($user, $user->getPassword()));
-        $user->setCreatedAt(new DateTimeImmutable());
 
         $this->manager->persist($user);
         $this->manager->flush();
@@ -80,7 +92,7 @@ class SecurityController extends AbstractController
             required: true,
             content: new OA\JsonContent(
                 properties: [
-                    new OA\Property(property: "username", type: "string", example: "adresse@email.com"),
+                    new OA\Property(property: "email", type: "string", example: "adresse@email.com"),
                     new OA\Property(property: "password", type: "string", example: "123-password")
                 ]
             )
@@ -131,11 +143,11 @@ class SecurityController extends AbstractController
                 description: 'Utilisateur trouvé',
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property: "username", type: "string", example: "adresse@email.com"),
+                        new OA\Property(property: "email", type: "string", example: "adresse@email.com"),
                         new OA\Property(property: "firstName", type: "string", example: "User"),
                         new OA\Property(property: "lastName", type: "string", example: "User_lastName"),
                         new OA\Property(property: "numero", type: "string", example: "06.XX.XX.XX.XX"),
-                        new OA\Property(property: 'api_token', type: 'string', example: 'qg5g56rtg6gtgt6tgz46t4z'),
+                        new OA\Property(property: 'apiToken', type: 'string', example: 'qg5g56rtg6gtgt6tgz46t4z'),
                         new OA\Property(property: 'roles', type: 'array', items: new OA\Items(type: 'string', example: 'ROLE_USER'))
                     ]
                 )
@@ -143,16 +155,19 @@ class SecurityController extends AbstractController
             new OA\Response(response: 404, description: 'Utilisateur non trouvé')
         ]
     )]
+    #[IsGranted('ROLE_USER')]
     public function show(#[CurrentUser] ?User $user): JsonResponse
     {
         if ($user) {
-            $json = $this->serializer->serialize($user, 'json');
+            $json = $this->serializer->serialize($user, 'json', [
+                AbstractNormalizer::GROUPS => ['user:read']
+            ]);
             return new JsonResponse($json, Response::HTTP_OK, [], true);
         }
 
         return new JsonResponse(['message' => 'User not found'], Response::HTTP_NOT_FOUND);
     }
-
+    
     #[Route('/edit', name: 'edit_updated', methods: ['PUT'])]
     #[OA\Put(
         path: '/api/edit',
@@ -161,7 +176,7 @@ class SecurityController extends AbstractController
             required: true,
             content: new OA\JsonContent(
                 properties: [
-                    new OA\Property(property: "username", type: "string", example: "nouveaux@email.com"),
+                    new OA\Property(property: "email", type: "string", example: "nouveaux@email.com"),
                     new OA\Property(property: "password", type: "string", example: "nouveau-password"),
                     new OA\Property(property: "numero", type: "string", example: "06.XX.XX.XX.XX"),
                     new OA\Property(property: "firstName", type: "string", example: "User"),
@@ -174,6 +189,7 @@ class SecurityController extends AbstractController
             new OA\Response(response: 404, description: 'Utilisateur non trouvé')
         ]
     )]
+    #[IsGranted('ROLE_USER')]
     public function updated(#[CurrentUser] ?User $user, Request $request, UserPasswordHasherInterface $passwordHasher): JsonResponse
     {
         if ($user) {
@@ -182,7 +198,10 @@ class SecurityController extends AbstractController
                 $request->getContent(),
                 User::class,
                 'json',
-                [AbstractNormalizer::OBJECT_TO_POPULATE => $user]
+                [
+                    AbstractNormalizer::OBJECT_TO_POPULATE => $user,
+                    AbstractNormalizer::GROUPS => ['user:write']
+                ]
             );
 
             $data = json_decode($request->getContent(), true);
@@ -192,7 +211,6 @@ class SecurityController extends AbstractController
                 $user->setPassword($passwordHasher->hashPassword($user, $data['password']));
             }
 
-            $user->setUpdatedAt(new DateTimeImmutable());
             $this->manager->flush();
 
             return new JsonResponse(['message' => 'User updated'], Response::HTTP_OK);
