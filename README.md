@@ -384,7 +384,7 @@ cat .env.local
 ```bash
 # Build et démarrage en arrière-plan
 # Sans --profile dev : phpMyAdmin et Mongo Express ne sont PAS démarrés
-docker compose up -d --build
+sudo docker compose up -d --build
 ```
  
 ---
@@ -392,7 +392,7 @@ docker compose up -d --build
 ### 6. Installer les dépendances PHP (mode production)
  
 ```bash
-docker exec php-container composer install --no-dev --optimize-autoloader
+sudo docker exec php-container composer install --no-dev --optimize-autoloader
 # --no-dev              : exclut PHPUnit, Maker Bundle et les outils de dev
 # --optimize-autoloader : génère un autoloader optimisé pour la performance
 ```
@@ -402,7 +402,7 @@ docker exec php-container composer install --no-dev --optimize-autoloader
 ### 7. Exécuter les migrations de base de données
  
 ```bash
-docker exec php-container php bin/console doctrine:migrations:migrate --no-interaction --env=prod
+sudo docker exec php-container php bin/console doctrine:migrations:migrate --no-interaction --env=prod
 ```
  
 ---
@@ -410,8 +410,8 @@ docker exec php-container php bin/console doctrine:migrations:migrate --no-inter
 ### 8. Vider et préchauffer le cache Symfony
  
 ```bash
-docker exec php-container php bin/console cache:clear --env=prod
-docker exec php-container php bin/console cache:warmup --env=prod
+sudo docker exec php-container php bin/console cache:clear --env=prod
+sudo docker exec php-container php bin/console cache:warmup --env=prod
 ```
  
 ---
@@ -419,12 +419,12 @@ docker exec php-container php bin/console cache:warmup --env=prod
 ### 9. Vérifier l'état des conteneurs
  
 ```bash
-docker compose ps
+sudo docker compose ps
  
 # Consulter les logs en temps réel en cas de problème
-docker compose logs -f
-docker compose logs php
-docker compose logs nginx
+sudo docker compose logs -f
+sudo docker compose logs php
+sudo docker compose logs nginx
 ```
  
 ---
@@ -440,13 +440,13 @@ rsync -avz --delete \
 # 2. Sur le serveur : rebuild et redémarrage
 ssh user@IP_SERVEUR
 cd /var/www/vite-et-gourmand
-docker compose up -d --build
+sudo docker compose up -d --build
  
 # 3. Mettre à jour les dépendances, migrations et cache
-docker exec php-container composer install --no-dev --optimize-autoloader
-docker exec php-container php bin/console doctrine:migrations:migrate --no-interaction
-docker exec php-container php bin/console cache:clear --env=prod
-docker exec php-container php bin/console cache:warmup --env=prod
+sudo docker exec php-container composer install --no-dev --optimize-autoloader
+sudo docker exec php-container php bin/console doctrine:migrations:migrate --no-interaction
+sudo docker exec php-container php bin/console cache:clear --env=prod
+sudo docker exec php-container php bin/console cache:warmup --env=prod
 ```
  
 ---
