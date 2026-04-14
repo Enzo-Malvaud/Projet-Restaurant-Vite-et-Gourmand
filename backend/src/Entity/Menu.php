@@ -16,12 +16,12 @@ class Menu
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['menu:read'])]
+    #[Groups(['menu:read',  'orderItem:read', 'order:read'])]
     private ?int $id = null;
 
   
     #[ORM\Column(length: 255)]
-    #[Groups(['menu:read', 'menu:write'])]
+    #[Groups(['menu:read', 'menu:write',  'orderItem:read', 'order:read'])]
     private ?string $title_menu = null;
 
 
@@ -36,8 +36,8 @@ class Menu
 
   
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
-    #[Groups(['menu:read', 'menu:write'])]
-    private ?float $price_menu = null;
+    #[Groups(['menu:read', 'menu:write',  'orderItem:read', 'order:read'])]
+    private ?string $price_menu = null;
 
   
     #[ORM\Column]
@@ -182,13 +182,13 @@ class Menu
         return $this;
     }
 
-    public function getPriceMenu(): ?float
+    public function getPriceMenu(): ?string
     {
         return $this->price_menu;
     }
 
 
-    public function setPriceMenu(float $price_menu): static
+    public function setPriceMenu(string $price_menu): static
     {
         $this->price_menu = $price_menu;
         return $this;

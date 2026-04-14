@@ -14,31 +14,29 @@ class OrderItem
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['orderItem:read'])]
+    #[Groups(['orderItem:read', 'order:read'])]
     private ?int $id = null;
 
-
-
     #[ORM\Column]
-    #[Groups(['orderItem:read', 'orderItem:write'])]
-    private ?int $quantity = null; 
-
+    #[Groups(['orderItem:read', 'orderItem:write', 'order:read'])]
+    private ?int $quantity = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
-    #[Groups(['orderItem:read'])]
+    #[Groups(['orderItem:read', 'order:read'])] // ← jamais en write : snapshot calculé côté serveur
     private ?float $price_unit = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['orderItem:write'])]
+    #[Groups(['orderItem:read', 'order:read'])] // ← apparaît dans GET /orders/{id} et GET /orders/{id}/items/{itemId}
     private ?Menu $menu = null;
 
     #[ORM\ManyToOne(inversedBy: 'orderItems')]
     #[ORM\JoinColumn(nullable: false)]
+    // ← pas de Groups ici : évite la référence circulaire Order → OrderItem → Order
     private ?Order $order = null;
-    
+
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    #[Groups(['orderItem:read'])]
+    #[Groups(['orderItem:read', 'order:read'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\PrePersist]
@@ -54,7 +52,6 @@ class OrderItem
         return $this->id;
     }
 
-
     public function getQuantity(): ?int
     {
         return $this->quantity;
@@ -66,7 +63,6 @@ class OrderItem
         return $this;
     }
 
- 
     public function getPriceUnit(): ?float
     {
         return $this->price_unit;
@@ -104,7 +100,6 @@ class OrderItem
     {
         return $this->createdAt;
     }
-
 
     public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {

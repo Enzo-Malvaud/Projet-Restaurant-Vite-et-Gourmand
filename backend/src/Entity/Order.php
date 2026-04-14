@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
-#[ORM\Table(name: '`order`')] 
+#[ORM\Table(name: '`order`')]
 #[ORM\HasLifecycleCallbacks]
 class Order
 {
@@ -28,64 +28,54 @@ class Order
     #[Groups(['order:read', 'order:write'])]
     private ?\DateTimeImmutable $delivery_datetime = null;
 
-
     #[ORM\Column]
     #[Groups(['order:read', 'order:write'])]
     private ?int $number_of_persons = null;
-
 
     #[ORM\Column(length: 50)]
     #[Groups(['order:read', 'order:write'])]
     private ?string $status = 'pending';
 
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    #[Groups(['order:read'])] // ← jamais en write : calculé côté serveur
+    private ?string $order_price = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
-    #[Groups(['order:read'])]
-    private ?float $order_price = null;
-
-
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
-    #[Groups(['order:read'])]
-    private ?float $delivery_price = null;
+    #[Groups(['order:read'])] // ← jamais en write : calculé côté serveur
+    private ?string $delivery_price = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
-    #[Groups(['order:read'])]
-    private ?float $total_price = null;
-
+    #[Groups(['order:read'])] // ← jamais en write : calculé côté serveur
+    private ?string $total_price = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     #[Groups(['order:read'])]
     private ?\DateTimeImmutable $createdAt = null;
 
-
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     #[Groups(['order:read'])]
     private ?\DateTimeImmutable $updatedAt = null;
 
-
     #[ORM\ManyToOne(inversedBy: 'orders')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['order:write'])]
+    #[Groups(['order:read'])] // ← read uniquement, la relation est résolue manuellement dans le controller
     private ?User $user = null;
 
-
     #[ORM\ManyToOne(inversedBy: 'orders')]
-    #[Groups(['order:write'])]
+    #[Groups(['order:read'])] // ← read uniquement, idem
     private ?Notice $notice = null;
 
     /**
      * @var Collection<int, OrderItem>
-
      */
     #[ORM\OneToMany(targetEntity: OrderItem::class, mappedBy: 'order', orphanRemoval: true)]
-    #[Groups(['order:read'])]
+    #[Groups(['order:read'])] // ← les items apparaissent dans la réponse GET /orders/{id}
     private Collection $orderItems;
 
     public function __construct()
     {
         $this->orderItems = new ArrayCollection();
     }
-
 
     #[ORM\PrePersist]
     public function setCreatedAtValue(): void
@@ -94,7 +84,6 @@ class Order
             $this->createdAt = new \DateTimeImmutable();
         }
     }
-
 
     #[ORM\PreUpdate]
     public function setUpdatedAtValue(): void
@@ -107,7 +96,7 @@ class Order
         return $this->id;
     }
 
-   public function getTitle(): ?string
+    public function getTitle(): ?string
     {
         return $this->title;
     }
@@ -151,39 +140,34 @@ class Order
         return $this;
     }
 
-
-    public function getOrderPrice(): ?float
+    public function getOrderPrice(): ?string
     {
         return $this->order_price;
     }
 
-
-    public function setOrderPrice(float $order_price): static
+    public function setOrderPrice(string $order_price): static
     {
         $this->order_price = $order_price;
         return $this;
     }
 
-
-    public function getDeliveryPrice(): ?float
+    public function getDeliveryPrice(): ?string
     {
         return $this->delivery_price;
     }
 
-
-    public function setDeliveryPrice(float $delivery_price): static
+    public function setDeliveryPrice(string $delivery_price): static
     {
         $this->delivery_price = $delivery_price;
         return $this;
     }
 
-    public function getTotalPrice(): ?float
+    public function getTotalPrice(): ?string
     {
         return $this->total_price;
     }
 
-
-    public function setTotalPrice(float $total_price): static
+    public function setTotalPrice(string $total_price): static
     {
         $this->total_price = $total_price;
         return $this;
@@ -204,7 +188,6 @@ class Order
     {
         return $this->updatedAt;
     }
-
 
     public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
     {
@@ -246,7 +229,7 @@ class Order
     {
         if (!$this->orderItems->contains($orderItem)) {
             $this->orderItems->add($orderItem);
-            $orderItem->setOrder($this); 
+            $orderItem->setOrder($this);
         }
         return $this;
     }
@@ -254,7 +237,7 @@ class Order
     public function removeOrderItem(OrderItem $orderItem): static
     {
         if ($this->orderItems->removeElement($orderItem)) {
-            if ($orderItem->getOrder() === $this) { 
+            if ($orderItem->getOrder() === $this) {
                 $orderItem->setOrder(null);
             }
         }
