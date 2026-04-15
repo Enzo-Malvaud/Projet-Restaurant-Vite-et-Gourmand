@@ -1,4 +1,12 @@
+# --- RACINE ---
+.env
+.env.local
+.env.prod
+.env.test
+docker-compose.override.yml
 
+# --- BACKEND (Symfony) ---
+/backend/.env
 /backend/.env.local
 /backend/.env.local.php
 /backend/.env.*.local
@@ -6,18 +14,16 @@
 /backend/public/bundles/
 /backend/var/
 /backend/vendor/
-###< symfony/framework-bundle ###
-
-###> phpunit/phpunit ###
 /backend/phpunit.xml
 /backend/.phpunit.cache/
-###< phpunit/phpunit ###
-
-###> symfony/asset-mapper ###
 /backend/public/assets/
 /backend/assets/vendor/
-###< symfony/asset-mapper ###
 
+# --- FRONTEND ---
 /frontend/node_modules/
-.github/workflows/main.yaml
-backend/src/Controller/DefaultController.php
+/frontend/.env
+/frontend/.env.local
+
+# --- DIVERS ---
+.DS_Store
+Thumbs.db
