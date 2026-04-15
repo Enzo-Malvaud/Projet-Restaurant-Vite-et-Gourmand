@@ -1,0 +1,8 @@
+services:
+  php:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.prod
+    volumes: []
+    environment:
+      - APP_ENV=prod
