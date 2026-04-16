@@ -3,7 +3,7 @@
 .env.local
 .env.prod
 .env.test
-docker-compose.override.yml
+
 
 # --- BACKEND (Symfony) ---
 /backend/.env
