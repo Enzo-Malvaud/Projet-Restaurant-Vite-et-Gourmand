@@ -174,7 +174,6 @@ function validateConfirmationPassword(inputPwd, inputConfirmPwd){
 
 function signupUser(){
 
-    if (event) event.preventDefault();
 
     let dataForm = new FormData(formSignup);
 

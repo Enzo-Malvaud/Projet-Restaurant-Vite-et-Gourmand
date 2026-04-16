@@ -1,3 +1,5 @@
+> ⚠️ **ATTENTION : INSTRUCTIONS OBSOLÈTES** > Les instructions d'installation et de configuration ci-dessous ne sont plus à jour. 
+> Le projet a migré vers une architecture Docker. Ce README est en cours de réécriture.
 # 🍽️ Vite et Gourmand — Site Web Traiteur
  
 Application web et mobile pour l'entreprise de traiteur **Vite et Gourmand**, basée à Bordeaux et tenue par José et Julie. Elle permet la consultation et la commande de menus (simples ou événementiels), et assure la présence en ligne de l'entreprise.
