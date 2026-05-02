@@ -51,7 +51,7 @@ logs:
 	$(DC_PROD) logs -f nginx php
 
 # ==============================================================================
-# SYMFONY - INSTALLATION & CACHE
+# SYMFONY - INSTALLATION & CACHE  PROD
 # ==============================================================================
 
 clear-cache-prod:
