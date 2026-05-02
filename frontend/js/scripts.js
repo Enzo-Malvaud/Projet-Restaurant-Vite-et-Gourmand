@@ -123,10 +123,11 @@ function showAndHideElementsForRoles() {
 }
 
 //function permettant de sécuriser entrer utilisareur 
-function sanitizeHtml(text){
+function sanitizeHtml(text) {
+    if (typeof text !== 'string') return ''; 
     const tempHtml = document.createElement('div');
-    tempHtml.textContent = text;
-    return tempHtml.innerHTML;
+    tempHtml.textContent = text; 
+    return tempHtml.innerHTML;   
 }
 
 /*function getInfosUser(){
