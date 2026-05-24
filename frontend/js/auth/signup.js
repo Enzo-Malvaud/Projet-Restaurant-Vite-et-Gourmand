@@ -89,9 +89,9 @@ async function signupUser() {
     const raw = JSON.stringify({
         "email":     dataForm.get("email"),
         "password":  dataForm.get("mdp"),
-        "numero":    dataForm.get("num"),
-        "firstName": dataForm.get("nom"),
-        "lastName":  dataForm.get("prenom")
+        "numero":    sanitizeHtml(dataForm.get("num")),
+        "firstName": sanitizeHtml(dataForm.get("nom")),
+        "lastName":  sanitizeHtml(dataForm.get("prenom"))
     });
 
     try {
