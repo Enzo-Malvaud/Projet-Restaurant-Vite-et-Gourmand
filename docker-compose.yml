@@ -69,8 +69,8 @@ services:
       MONGO_INITDB_DATABASE: ${MONGODB_DB:-myapp}
     volumes:
       - mongodb_data:/data/db
-      - mongodb_config:/data/configdb
-      - ./init-db.js:/docker-entrypoint-initdb.d/init-db.js:ro
+      - /backend/mongo-db/mongodb_config:/data/configdb
+      - ./backend/mongo-db/init-db.js:/docker-entrypoint-initdb.d/init-db.js:ro
     networks:
       - app-network
     healthcheck:

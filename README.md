@@ -1,9 +1,14 @@
-> ⚠️ **ATTENTION : INSTRUCTIONS OBSOLÈTES** > Les instructions d'installation et de configuration ci-dessous ne sont plus à jour. 
-> Le projet a migré vers une architecture Docker différente. Ce README est en cours de réécriture.
+# jeu de données Administrateur
+email : josé.admin@gmail.com
+mot de passe : Q7AxG7!p
+
 # 🍽️ Vite et Gourmand — Site Web Traiteur
  
 Application web et mobile pour l'entreprise de traiteur **Vite et Gourmand**, basée à Bordeaux et tenue par José et Julie. Elle permet la consultation et la commande de menus (simples ou événementiels), et assure la présence en ligne de l'entreprise.
- 
+
+
+> ⚠️ **ATTENTION : INSTRUCTIONS OBSOLÈTES** > Les instructions d'installation et de configuration ci-dessous ne sont plus à jour. 
+> Le projet a migré vers une architecture Docker différente. Ce README est en cours de réécriture. 
 ---
  
 ## 📋 Table des matières

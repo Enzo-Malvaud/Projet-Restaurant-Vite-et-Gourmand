@@ -5,14 +5,14 @@ export const allRoutes = [
     // Routes publiques
     // Routes publiques
     new Route("/", "Accueil", "pages/home.html", []),
-    new Route("/ourmenus", "Nos menus", "/pages/menu/ourmenus.html", [], "/js/menu/ourmenus.js"),
+    new Route("/ourmenus", "Nos menus", "/pages/menu/ourmenus.html", [], "js/menu/ourmenus.js" ),
     new Route("/detailmenu", "Detail Menu", "/pages/menu/detailmenu.html", []),
     //new Route("/ourrentals", "Nos locations", "/pages/rental/ourrentals.html", []),
     //new Route("/detailrental", "Detail location", "/pages/rental/detailrental.html", []),
     new Route("/signin", "Connexion", "/pages/auth/signin.html", ["disconnected"], "/js/auth/signin.js"),
     new Route("/signup", "Inscription", "/pages/auth/signup.html", ["disconnected"], "/js/auth/signup.js"),
-    new Route("/contact", "Contact", "/pages/contact.html", []),
-    new Route("/mentionslegales", "Mentions Légales", "/pages/mentionslegales.html", []),
+    new Route("/contact", "Contact", "/pages/pages_annexe/contact.html", []),
+    new Route("/mentionslegales", "Mentions Légales", "/pages/pages_annexe/mentionslegales.html", []),
 
     // Routes utilisateurs connectés
     //new Route("/user/dashboard", "Mon espace", "/pages/user/dashboard.html", ["ROLE_USER"]),
@@ -27,7 +27,7 @@ export const allRoutes = [
     new Route("/employee/profile", "Mon profil employee", "/pages/employee/profile.html", ["ROLE_USER"]),
     
     // Routes administrateurs
-    new Route("/admin/dashboard/stats", "Pages des ventes", "/pages/admin/stats.html", ["ROLE_ADMIN"], "/js/admin/stats.js"),
+    new Route("/admin/dashboard/stats", "Pages des ventes", "/pages/admin/menu_stastistique_ventes.html", ["ROLE_ADMIN"], "/js/admin/menu_stastistique_ventes.js"),
     new Route("/admin/users", "Gérer utilisateurs", "/pages/admin/users.html", ["ROLE_ADMIN"]),
     new Route("/admin/dashboard", "Mon espace admin", "/pages/admin/dashboard.html", ["ROLE_ADMIN"]),
     new Route("/admin/orders", "Commandes", "/pages/admin/orders.html", ["ROLE_ADMIN"]),
