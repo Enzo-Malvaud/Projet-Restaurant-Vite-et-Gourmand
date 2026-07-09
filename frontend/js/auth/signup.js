@@ -87,8 +87,8 @@ async function signupUser() {
     myHeaders.append("Content-Type", "application/json");
 
     const raw = JSON.stringify({
-        "email":     dataForm.get("email"),
-        "password":  dataForm.get("mdp"),
+        "email":     sanitizeHtml(dataForm.get("email")),
+        "password":  sanitizeHtml(dataForm.get("mdp")),
         "numero":    sanitizeHtml(dataForm.get("num")),
         "firstName": sanitizeHtml(dataForm.get("nom")),
         "lastName":  sanitizeHtml(dataForm.get("prenom"))
