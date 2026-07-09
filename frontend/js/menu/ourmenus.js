@@ -1,4 +1,3 @@
-
 const buttonFilter = document.getElementById("buttonFilter");
 const filterMenu = document.getElementById("filterMenu");
 

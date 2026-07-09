@@ -5,7 +5,7 @@ export const allRoutes = [
     // Routes publiques
     // Routes publiques
     new Route("/", "Accueil", "pages/home.html", []),
-    new Route("/ourmenus", "Nos menus", "/pages/menu/ourmenus.html", []),
+    new Route("/ourmenus", "Nos menus", "/pages/menu/ourmenus.html", [], "/js/menu/ourmenus.js"),
     new Route("/detailmenu", "Detail Menu", "/pages/menu/detailmenu.html", []),
     //new Route("/ourrentals", "Nos locations", "/pages/rental/ourrentals.html", []),
     //new Route("/detailrental", "Detail location", "/pages/rental/detailrental.html", []),
