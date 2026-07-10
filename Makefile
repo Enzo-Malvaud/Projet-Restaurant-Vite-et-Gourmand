@@ -172,12 +172,19 @@ reset-dev:
 	@echo ""
 	@make install-dev
 	@echo ""
+	$(CONSOLE) doctrine:database:drop --force
+	@echo "✅ Base de données supprimée"
+	@echo ""
+	$(CONSOLE) doctrine:database:create
+	@echo "✅ Base de données créée"
+	@echo ""
 	@make migrate-dev
 	@echo ""
 	@make fixtures-dev
 	@echo ""
 	@echo "✅ Environnement de développement réinitialisé avec succès!"
 	@echo ""
+
  
 # Réinitialiser complètement l'environnement de production
 reset-prod:
